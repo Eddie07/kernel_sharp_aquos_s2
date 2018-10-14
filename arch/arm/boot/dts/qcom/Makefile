@@ -181,6 +181,11 @@ dtb-$(CONFIG_ARCH_MSMHAMSTER) += msmhamster-rumi.dtb
 
 #Fihtdc@Alan,  heineken_SS2, SG1, remove nokia
 dtb-$(CONFIG_FIH_SDM630_SDM660_PROJS) += sdm630-ss2eu.dtb \
+        sdm630-ss2_cn.dtb \
+        sdm630-mtp-pl2-preEVT.dtb \
+        sdm630-mtp-pl2-EVT1.5.dtb \
+        sdm630-mtp-pl2-EVT1.5-CD.dtb \
+        sdm630-mtp-pl2-dvt.dtb \
 #       sdm660-mtp.dtb \
 #	sdm630-mtp.dtb \
 #	sdm660-qrd.dtb \
@@ -198,10 +203,6 @@ dtb-$(CONFIG_FIH_SDM630_SDM660_PROJS) += sdm630-ss2eu.dtb \
 #  sdm630-mtp-c1n-EVT.dtb \
 #	sdm630-mtp-c1n-EVT2.0.dtb \
 #	sdm630-mtp-c1n-EVT2.1.dtb \
-#	sdm630-mtp-pl2-preEVT.dtb \
-#	sdm630-mtp-pl2-EVT1.5.dtb \
-#	sdm630-mtp-pl2-EVT1.5-CD.dtb \
-#	sdm630-mtp-pl2-dvt.dtb \
 #	sdm660-mtp-b2n-preEVT.dtb \
 #	sdm660-mtp-b2n-EVT.dtb \
 #	sdm660-mtp-b2n-EVT1.5.dtb \
