@@ -4,7 +4,12 @@
 
 menu "fih driver"
 
-config FIH_SDM630_SDM660_PROJS
+config SHARP_SDM630_SDM660_PROJS
+	bool "01 FIH_8937_PROJS"
+	help
+	Enable the support for FIH_8937_PROJS flag
+
+config NOKIA_SDM630_SDM660_PROJS
 	bool "01 FIH_8937_PROJS"
 	help
 	Enable the support for FIH_8937_PROJS flag
