@@ -1,4 +1,19 @@
-        Linux kernel release 4.x <http://kernel.org/>
+       ------------SHARP AQUOS S2 KERNEL------------
+       Made for Lineage 
+       Currently supporting only SS2 model.
+       Used stock kernel of Nokia with self made device tree by me for SS2 and SG1-S3 mini (working too)
+       Leds, vibration ported from PH-1.
+       Has hacked dm-verity and forced system verity checks. No need Magisk to run.
+       
+       Njoy
+       Heineken
+       F*ck 4pda moderators
+       qq1978 and others...
+       
+       
+       
+       
+       Linux kernel release 4.x <http://kernel.org/>
 
 These are the release notes for Linux version 4.  Read them carefully,
 as they tell you what this is all about, explain how to install the
