@@ -81,13 +81,20 @@ extern struct fih_touch_cb touch_cb;
 char *fw_app_bin;
 char *tp_ini;
 //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807
-extern int gdouble_tap_enable;
+
 
 #if FTS_DEBUG_EN
 int g_show_log = 1;
 #else
 int g_show_log = 0;
 #endif
+
+//nodes heineken
+int glove_enable = 0;
+extern int glove_enable;
+extern int gdouble_tap_enable;
+
+static struct proc_dir_entry *prEntry_tp = NULL;
 
 #if (FTS_DEBUG_EN && (FTS_DEBUG_LEVEL == 2))
 char g_sz_debug[1024] = {0};
@@ -225,6 +232,33 @@ void fts_irq_enable(void)
     spin_unlock_irqrestore(&fts_wq_data->irq_lock, irqflags);
 }
 
+#define TS_ENABLE_FOPS(type) \
+static ssize_t type##_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos) \
+{ \
+	char enable[3]; \
+	sprintf(enable, "%d\n", !!type##_enable); \
+	return simple_read_from_buffer(user_buf, sizeof(enable), ppos, enable - *ppos, sizeof(enable)); \
+} \
+static ssize_t type##_write_func(struct file *file, const char __user *user_buf, size_t count, loff_t *ppos) \
+{ \
+	int ret; \
+	char enable; \
+	ret = copy_from_user(&enable, user_buf, sizeof(enable)); \
+	if (ret) \
+		return ret; \
+	type##_enable = enable - '0'; \
+	return count; \
+} \
+static const struct file_operations type##_proc_fops = { \
+	.write = type##_write_func, \
+	.read =  type##_read_func, \
+	.open = simple_open, \
+	.owner = THIS_MODULE, \
+}; 
+
+TS_ENABLE_FOPS(glove);
+TS_ENABLE_FOPS(gdouble_tap);
+
 /*****************************************************************************
 *  Name: fts_input_dev_init
 *  Brief: input dev init
@@ -235,6 +269,24 @@ void fts_irq_enable(void)
 static int fts_input_dev_init( struct i2c_client *client, struct fts_ts_data *data,  struct input_dev *input_dev, struct fts_ts_platform_data *pdata)
 {
     int  err, len;
+	
+//	int ret = 0;
+	struct proc_dir_entry *prEntry_tmp  = NULL;
+	prEntry_tp = proc_mkdir("touchpanel", NULL);
+	if( prEntry_tp == NULL ){
+	//	ret = -ENOMEM;
+		FTS_ERROR("Couldn't create touchpanel\n");
+}
+	prEntry_tmp = proc_create("glove_enable", 0666, prEntry_tp, &glove_proc_fops);
+	if(prEntry_tmp == NULL){
+	//	ret = -ENOMEM;
+		FTS_ERROR("Couldn't create glove_enable");
+}
+	prEntry_tmp = proc_create("gdouble_tap_enable", 0666, prEntry_tp, &gdouble_tap_proc_fops);
+	if(prEntry_tmp == NULL){
+	//	ret = -ENOMEM;
+		FTS_ERROR("Couldn't create double_touch");
+}
 
     FTS_FUNC_ENTER();
 
@@ -677,13 +729,15 @@ static int fts_read_touchdata(struct fts_ts_data *data)
     struct ts_event * event = &(data->event);
 
 #if FTS_GESTURE_EN
+
+
     {
         u8 state;
         if (data->suspended)
         {
             ret = fts_i2c_read_reg(data->client, FTS_REG_GESTURE_EN, &state);
             if (ret < 0) {
-                BBOX_TP_I2C_READ_FAILED
+
             }
             if (state ==1)
             {
@@ -1160,22 +1214,22 @@ static int read_register_result(void)
        pr_info("F@TOUCH %s tp_st_count=%d",__func__,tp_st_count);
        return tp_st_count;
 }
-
+//heineken-FIH suxx
 //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807 begin
-int touch_double_tap_read_focaltech(void)
-{
-	pr_debug("%s, gdouble_tap_enable = %d", __func__, gdouble_tap_enable);
+//int touch_double_tap_read_focaltech(void)
+//{
+//	pr_debug("%s, gdouble_tap_enable = %d", __func__, gdouble_tap_enable);
+//
+//	return gdouble_tap_enable;
+//}
+//int touch_double_tap_write_focaltech(int enable)
+//{
+//	pr_info( "%s: set gdouble_tap_enable = %d", __func__, enable);
 
-	return gdouble_tap_enable;
-}
-int touch_double_tap_write_focaltech(int enable)
-{
-	pr_info( "%s: set gdouble_tap_enable = %d", __func__, enable);
+//	gdouble_tap_enable = enable;
 
-	gdouble_tap_enable = enable;
-
-	return 0;
-}
+//	return 0;
+//}
 //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807 end
 
 static void fts_fih_tp_enable(int flag)
@@ -1251,6 +1305,7 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     struct fts_ts_data *data;
     struct input_dev *input_dev;
     int err;
+
     printk(KERN_ERR "[FTS] Entet %s\n", __func__);
 
     FTS_FUNC_ENTER();
@@ -1423,8 +1478,8 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
     touch_cb.touch_fwupgrade = touch_fwupgrade;
     touch_cb.touch_fwupgrade_read = touch_fwupgrade_read;
     touch_cb.touch_vendor_read = touch_vendor_read;
-    touch_cb.touch_double_tap_read = touch_double_tap_read_focaltech; //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807
-    touch_cb.touch_double_tap_write = touch_double_tap_write_focaltech; //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807
+ //   touch_cb.touch_double_tap_read = touch_double_tap_read_focaltech; //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807
+ //   touch_cb.touch_double_tap_write = touch_double_tap_write_focaltech; //ZZDC-snow-Touch-ImplementDoubleTap-00+_20170807
     touch_cb.touch_alt_rst = fts_fih_tp_rst;
     touch_cb.touch_alt_st_count = read_register_result;
     touch_cb.touch_alt_st_enable = fts_fih_tp_enable;
@@ -1599,6 +1654,7 @@ EXPORT_SYMBOL(fts_tp_lcm_suspend);
 static int fts_ts_resume(struct device *dev)
 {
     struct fts_ts_data *data = dev_get_drvdata(dev);
+
     printk(KERN_ERR "[FTS] Entet %s\n", __func__);
     FTS_FUNC_ENTER();
     if (!data->suspended)
@@ -1620,6 +1676,7 @@ static int fts_ts_resume(struct device *dev)
 
 #if FTS_GESTURE_EN
     if (gdouble_tap_enable) {
+
     if (fts_gesture_resume(data->client) == 0)
     {
 		int err;

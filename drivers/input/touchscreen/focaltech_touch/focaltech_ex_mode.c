@@ -72,6 +72,7 @@ int  fts_charger_exit(struct i2c_client *client);
 /*****************************************************************************
 * 6.Static function prototypes
 *******************************************************************************/
+extern int glove_enable;
 
 #if FTS_GLOVE_EN
 static ssize_t fts_touch_glove_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -83,9 +84,9 @@ static ssize_t fts_touch_glove_store(struct device *dev, struct device_attribute
 {
     int ret;
 
-    if (FTS_SYSFS_ECHO_ON(buf))
-    {
-        if (!g_fts_mode_flag.fts_glove_mode_flag)
+
+
+        if (glove_enable)
 		{
 			FTS_INFO("[Mode]enter glove mode");
             ret = fts_enter_glove_mode(fts_i2c_client,true);
@@ -94,10 +95,8 @@ static ssize_t fts_touch_glove_store(struct device *dev, struct device_attribute
 				g_fts_mode_flag.fts_glove_mode_flag = true;
 			}
         }
-    }
-    else if (FTS_SYSFS_ECHO_OFF(buf))
-    {
-        if (g_fts_mode_flag.fts_glove_mode_flag)
+
+        if (!glove_enable)
         {
             FTS_INFO("[Mode]exit glove mode");
             ret = fts_enter_glove_mode(fts_i2c_client,false);
@@ -106,8 +105,8 @@ static ssize_t fts_touch_glove_store(struct device *dev, struct device_attribute
 				g_fts_mode_flag.fts_glove_mode_flag = false;
 			}
         }
-	}
-	FTS_INFO("[Mode]glove mode status:  %d", g_fts_mode_flag.fts_glove_mode_flag);
+	
+	FTS_INFO("[Mode]glove mode status:  %d", glove_enable);
     return count;
 }
 
@@ -124,7 +123,9 @@ int fts_enter_glove_mode( struct i2c_client *client, int mode)
     static u8 buf_addr[2] = { 0 };
     static u8 buf_value[2] = { 0 };
     buf_addr[0] = FTS_REG_GLOVE_MODE_EN; //glove control
-
+	
+    FTS_INFO ("glove mode");
+	
     if (mode)
         buf_value[0] = 0x01;
     else
@@ -330,6 +331,17 @@ int fts_ex_mode_init(struct i2c_client *client)
     g_fts_mode_flag.fts_glove_mode_flag = false;
     g_fts_mode_flag.fts_cover_mode_flag = false;
     g_fts_mode_flag.fts_charger_mode_flag = false;
+		    if (glove_enable == 0)
+			{
+        fts_enter_glove_mode(client, false);
+		FTS_DEBUG("Glove disabled init");
+		}
+		else
+		{
+        fts_enter_glove_mode(client, true);
+		FTS_DEBUG("Glove enabled init");
+		}
+		
 
     err = sysfs_create_group(&client->dev.kobj, &fts_touch_mode_group);
     if (0 != err)
@@ -357,8 +369,9 @@ int fts_ex_mode_recovery(struct i2c_client *client)
 {
     int ret = 0;
 #if FTS_GLOVE_EN
-    if (g_fts_mode_flag.fts_glove_mode_flag)
-        ret = fts_enter_glove_mode(client, true);
+    if (glove_enable == 0)
+        ret = fts_enter_glove_mode(client, false);
+		FTS_DEBUG("Glove disabled recovery");
 #endif
 
 #if FTS_COVER_EN

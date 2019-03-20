@@ -395,12 +395,12 @@ static void fts_check_gesture(struct input_dev *input_dev,int gesture_id)
     }
     FTS_DEBUG("envp[0]: %s", envp[0]);
     /* report event key */
-    if (gesture ==  KEY_WAKEUP)
+	
+//	   if (gesture ==  KEY_WAKEUP)
+    if (gesture  != -1)
     {
-        printk(KERN_ERR "[FTS] %s, key event %d pressed\n", __func__, gesture);
         input_report_key(input_dev, gesture, 1);
         input_sync(input_dev);
-        printk(KERN_ERR "[FTS] %s, key event %d released\n", __func__, gesture);
         input_report_key(input_dev, gesture, 0);
         input_sync(input_dev);
     }
@@ -608,7 +608,7 @@ int fts_gesture_resume(struct i2c_client *client)
     int i;
     u8 state;
     FTS_FUNC_ENTER();
-
+	FTS_DEBUG("RESUME ON");
     /* gesture not enable, return immediately */
 	if (gdouble_tap_enable == 0){
 		FTS_DEBUG("gesture is disabled");
