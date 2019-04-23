@@ -1,8 +1,7 @@
        ------------SHARP AQUOS S2 KERNEL------------
        Made for Lineage 
-       Currently supporting only SS2 model.
-       Used stock kernel of Nokia with self made device tree by me for SS2 and SG1-S3 mini (working too)
-       Leds, vibration ported from PH-1.
+       Currently supporting only SS2/SG1/SAT models.
+
        Has hacked dm-verity and forced system verity checks. No need Magisk to run.
        
        Njoy
