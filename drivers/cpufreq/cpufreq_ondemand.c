@@ -13,6 +13,7 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cpu.h>
+#include <linux/cpufreq.h>
 #include <linux/percpu-defs.h>
 #include <linux/slab.h>
 #include <linux/tick.h>
