@@ -1,0 +1,56 @@
+/* Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+
+/dts-v1/;
+
+#include "sdm630.dtsi"
+#include "sdm630-mtp.dtsi"
+#include "sdm660-internal-codec.dtsi"
+#include "fih/sd1/sd1-DVT-IDT.dtsi"
+#include "fih/sd1/dsi-panel-ft8716-ffd-video-evt2-630.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SDM 630 PM660 + PM660L MTP, HH1 EU DVT + !!!";
+	compatible = "qcom,sdm630-mtp", "qcom,sdm630", "qcom,mtp";
+	qcom,board-id = <8 0>;
+	qcom,pmic-id = <0x0001001b 0x0101011a 0x0 0x0>,
+			<0x0001001b 0x0201011a 0x0 0x0>;
+//	fih,hw-id = <8 2 0>;
+        fih,hw-id = <8 0 1>;
+	
+	qcom,battery-data {
+		qcom,s3_scud_3200mah_100k_jan17th2018 {
+			qcom,max-voltage-uv = <4252000>;		/* 4.25V */
+			qcom,fg-cc-cv-threshold-mv = <4242>;
+		};
+		qcom,hh1_scud_3100mah_200k {
+			qcom,max-voltage-uv = <4252000>;		/* 4.25V */
+			qcom,fg-cc-cv-threshold-mv = <4242>;
+		};
+	};
+};
+
+&pm660_fg {
+	qcom,fg-chg-term-current = <100>;	/* 100mA > 0.02C */
+	qcom,fg-chg-term-base-current = <75>;	/* 100mA - 25mA */
+};
+
+&pm660_charger {
+	qcom,fv-max-uv = <4252000>;			/* 4.4V */
+	qcom,hvdcp-usb-icl-ua = <1500000>;
+/* TEMP_LOW	TEMP_HIGH	FV */
+	qcom,jeita-fv-cfg = <0 157 4252000>,
+					<158 440 4252000>,
+					<441 550 4100000>;
+};
+

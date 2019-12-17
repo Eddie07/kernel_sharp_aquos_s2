@@ -1,0 +1,41 @@
+&soc {
+	fih_info {
+		compatible = "fih_info";
+		status = "ok";
+		fih-info,devmodel = "SD1";
+		fih-info,baseband = "1.0";
+		fih-info,bandinfo = "G_850_900_1800_1900^W_1_2_5_8^C_0^T_34_39^L_1_3_4_5_7_8_12_17_26_28_34_38_39_40_41";
+		fih-info,hwmodel  = "SD1";
+		fih-info,simslot  = "2";
+		fih-info,fqcxmlpath = "fqc_SD1.xml";
+	};
+
+	fih_mfd {
+		compatible = "fih_mfd";
+		status = "ok";
+		fih-mfd,productid = "NULL";
+		fih-mfd,bt_mac    = "NULL";
+		fih-mfd,wifi_mac  = "NULL";
+	};
+
+        fih_ddr {
+                compatible = "fih_ddr";
+                status = "ok";
+                fih-ddr,draminfo = "UNKNOWN_ LPDDR4x 4096MB";
+                fih-ddr,dramtest = "none";
+        };
+
+	fih_apr {
+		compatible = "fih_apr";
+		status = "ok";
+		fih-apr,poweroncause = "0x00000000";
+		fih-apr,poweroffcause = "0x00000000";
+		fih-apr,rebootreason = "0x00000000";
+	};
+
+	fih_info_management {
+		status = "okay";
+		compatible = "fih,dt_info";
+		adspinfo="SD1";
+	};
+};

@@ -1,0 +1,7 @@
+/* SD1 EVT2 SDM660 - IDT Wireless Charging*/
+
+/* inherit EVT2 Settings */
+#include "sd1-EVT2.dtsi"
+
+/* Diff */
+#include "audio-alsa-dvt.dtsi"

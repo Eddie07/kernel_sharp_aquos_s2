@@ -1,0 +1,6 @@
+/* SD1 EVT2 SDM660 - ST Wireless charging */
+
+/* inherit EVT1 Settings */
+#include "sd1-EVT1.dtsi"
+
+/* Diff */

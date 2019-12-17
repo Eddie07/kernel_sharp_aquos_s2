@@ -1,0 +1,73 @@
+&soc {
+	tlmm: pinctrl@03000000 {
+		pmx_wlc_intr {
+			wlc_intr_default: wlc_intr_default {
+				mux {
+					pins = "gpio21";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio21";
+					drive-strength = <2>; /* 2 mA */
+					bias-pull-up; /* pull up */
+					input-enable;
+				};
+			};
+		};
+
+
+		pmx_wlc_enable_active {
+			wlc_enable_active: wlc_enable_active {
+				mux {
+					pins = "gpio76";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio76";
+					drive-strength = <2>; /* 2 mA */
+					output-low;
+				};
+			};
+		};
+
+		pmx_wlc_enable_sleep {
+			wlc_enable_sleep: wlc_enable_sleep {
+				mux {
+					pins = "gpio76";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio76";
+					drive-strength = <2>; /* 2 mA */
+					output-high;
+				};
+			};
+		};
+	};
+};
+
+&i2c_2 {
+	wl_p9221@61 {
+		compatible = "wl,p9221";
+		reg = <0x61>;
+		status = "okay";
+		interrupts = <21 0x00>;
+		wl,irq-gpio = <&tlmm 21 0x00>;
+		wl,enable-gpio = <&tlmm 76 0x00>;
+		wl,screenon-current-limit;
+		wl,screenon-epp-current = <500000>;
+		wl,screenoff-epp-current = <800000>;
+		wl,bpp-current = <1000000>;
+		wl,poweroffcharging-current-limit;
+		wl,poweroff-epp-current = <800000>;
+		wl,poweroff-bpp-current = <1000000>;
+		pinctrl-names = "pmx_wlc_intr_active",
+			"pmx_wlc_rx_path_active", "pmx_wlc_rx_path_sleep";
+		pinctrl-0 = <&wlc_intr_default>;
+		pinctrl-1 = <&wlc_enable_active>;
+		pinctrl-2 = <&wlc_enable_sleep>;
+	};
+};

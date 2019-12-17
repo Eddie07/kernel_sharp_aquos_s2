@@ -1,0 +1,48 @@
+/* HG1 EVT1 SDM660 */
+
+/* MemMap parts */
+#include "../common/memmap-evb.dtsi"
+
+/* SYSTEM parts */
+#include "system.dtsi"
+
+/* PMIC parts */
+
+/* GPIO parts */
+
+/* Peripheral */
+
+/* Charging */
+#include "charger-evt1.dtsi"
+
+/* Audio */
+#include "audio-alsa-dvt.dtsi"
+
+/* Camera */
+#include "camera-hg1.dtsi" 
+/* Haptic */
+#include "haptics-evt2.dtsi"
+
+/* Touch */
+#include "touch-focaltech8716-evt2.dtsi"
+
+/* Fingerprint */
+#include "fingerprint-gf5288-evt.dtsi"
+
+/* SD */
+#include "sd-evb.dtsi"
+
+/* Sensor */
+#include "hallsensor-ah1902-evb.dtsi"
+
+/* Keypad */
+#include "keypad.dtsi"
+
+/* NFC */
+#include "nfc-nq-nci-evt.dtsi"
+
+/* USB */
+#include "usb_phy.dtsi"
+
+/* LED */
+#include "led-evt2.dtsi"

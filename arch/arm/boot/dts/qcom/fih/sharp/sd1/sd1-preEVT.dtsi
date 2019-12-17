@@ -1,0 +1,49 @@
+/* SD1 preEVT SDM660 */
+
+/* MemMap parts */
+#include "../common/memmap-evb.dtsi"
+
+/* SYSTEM parts */
+#include "system.dtsi"
+
+/* PMIC parts */
+
+/* GPIO parts */
+
+/* Peripheral */
+
+/* Charging */
+#include "charger-evt1.dtsi"
+
+/* Audio */
+#include "audio-alsa-evb.dtsi"
+
+/* Camera */
+#include "camera-preevt.dtsi"
+
+/* Haptic */
+#include "haptics-evt2.dtsi"
+
+/* Touch */
+#include "touch-focaltech8716-evt2.dtsi"
+
+/* Fingerprint */
+#include "fingerprint-gf5288-evt.dtsi"
+
+/* SD */
+#include "sd-evb.dtsi"
+
+/* Sensor */
+#include "hallsensor-fih.dtsi"
+
+/* Keypad */
+#include "keypad.dtsi"
+
+/* NFC */
+#include "nfc-nq-nci-evt.dtsi"
+
+/* USB */
+#include "usb_phy.dtsi"
+
+/* LED */
+#include "led-evt2.dtsi"

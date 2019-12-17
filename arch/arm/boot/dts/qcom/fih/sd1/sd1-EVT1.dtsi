@@ -1,0 +1,10 @@
+/* SD1 EVT1 SDM660 */
+
+/* inherit preEVT Settings */
+#include "sd1-preEVT.dtsi"
+
+/* Diff */
+#include "camera-evt1.dtsi"
+
+/* NFC */
+#include "nfc-nq-nci-evt.dtsi"

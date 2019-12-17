@@ -1,0 +1,57 @@
+/* SS2  SDM630 */
+
+/* MemMap parts */
+#include "../common/memmap-evb.dtsi"
+
+/* Common DT Info */
+#include "common/common_info_sdm_v1.dtsi"
+
+/* SYSTEM parts */
+#include "common/system-preEVT-630.dtsi"
+
+/* Keypad parts */
+#include "misc/keypad.dtsi"
+
+/* PMIC parts */
+
+/* GPIO parts */
+
+/* Peripheral */
+
+/* Charging */
+#include "charger/charger-evt1.dtsi"
+
+/* Audio */
+#include "audio/sdm660-internal-codec-sg1.dtsi"
+
+/* Camera */
+
+#include "camera/camera-SG1.dtsi"
+
+/* Haptic */
+ #include "misc/haptics-hal1.1_SG1.dtsi"
+
+/* SD */
+#include "misc/sd-evb.dtsi"
+
+/* Fingerprint */
+#include "fingerprint/figerprint-fp1020.dtsi"
+
+/* Sensor */
+#include "sensors/hallsensor-ah1902-evb.dtsi"
+
+/* Touch */
+#include "touch/touch-focaltech8716.dtsi"
+
+/* LCM */
+#include "display/dsi-panel-ft8716-ffd-video-evt2.dtsi"
+//#include "display/dsi-panel-fih-ft8716-1080p-video.dtsi"
+//#include "display/dsi-panel-fih-ft8716-1080p-video-SATv2.dtsi"
+
+/*LEDS*/ 
+// rgb lights
+#include "leds/heineken_leds_rgb.dtsi"
+
+/*specific*/
+#include "misc/specific_SG1.dtsi"
+

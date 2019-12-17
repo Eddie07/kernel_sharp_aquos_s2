@@ -1,0 +1,70 @@
+/ {
+	/delete-node/ qcom,battery-data;
+	fih_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "fg-gen3-batterydata-s3-scud-3200mah-100k.dtsi"      	/* 2018/01/17 from BJ */
+		//#include "fg-gen3-batterydata-s3-scud-3100mah-100k.dtsi"  	/* 2017/08/28 from BJ and U.S. */
+	};
+};
+
+&pm660_fg {
+	qcom,battery-data = <&fih_batterydata>;
+	qcom,fg-cutoff-voltage = <3350>;
+	qcom,fg-empty-voltage = <3300>;
+	qcom,fg-vbatt-low-thr = <3350>;
+	qcom,fg-chg-term-current = <150>;	/* 150mA > 0.02C */
+	qcom,fg-sys-term-current = <(-175)>;	/* 150mA + 25mA */
+	qcom,fg-chg-term-base-current = <125>;	/* 150mA - 25mA */
+	qcom,fg-recharge-soc-thr = <99>;
+	qcom,fg-auto-recharge-soc;
+	qcom,fg-rsense-sel = <0>;
+	qcom,fg-jeita-thresholds = <0 15 45 55>;
+	qcom,battery-thermal-coefficients = [A1 50 ff];
+	qcom,fg-force-load-profile;
+	qcom,hold-soc-while-full;
+};
+
+&pm660_charger {
+	/delete-property/ qcom,batteryless-platform;
+//	qcom,step-soc-thresholds = <70 80 90 100>;
+//	qcom,step-current-deltas = <1550000 0 0 0 0>;	/* +0.5C +0 +0 +0 +0 */
+	qcom,fcc-max-ua = <3100000>;			/* 0.5C */
+	qcom,fv-max-uv = <4400000>;			/* 4.4V */
+	qcom,usb-icl-ua = <3000000>;
+	/delete-property/ qcom,wipower-max-uw;
+	qcom,thermal-mitigation = <2100000 1500000 1200000 1000000 900000 800000
+		700000 600000 500000 400000 300000 200000 100000 0>;
+	qcom,auto-recharge-soc;
+	qcom,float-option = <1>;
+	qcom,step-charging-enable;
+	qcom,sw-jeita-enable;
+	/* JEITA dynamic compensation*/
+//	qcom,jeita-fv-comp-cool = <0>;			/* 4.4V = 4.4V - 0.0V */
+//	qcom,jeita-cc-comp-cool = <620000>;		/* 0.3C = 0.5C - 0.2C */
+//	qcom,jeita-fv-comp-warm = <300000>;		/* 4.1V = 4.4V - 0.3V */
+//	qcom,jeita-cc-comp-warm = <0>;			/* 0.5C = 0.5C - 0.0C */
+/* VBAT_LOW	VBAT_HIGH	FCC */
+	qcom,step-fcc-cfg = <3000000 4300000 3100000>,
+					<4301000 4400000 1550000>;
+/* TEMP_LOW	TEMP_HIGH	FCC */
+	qcom,jeita-fcc-cfg = <0 157 930000>,
+					<158 460 3100000>,
+					<461 550 1500000>;
+/* TEMP_LOW	TEMP_HIGH	FV */
+	qcom,jeita-fv-cfg = <0 157 4400000>,
+					<158 440 4400000>,
+					<441 550 4100000>;
+	qcom,step-fcc-hysteresis = <20000>;
+	qcom,jeita-fcc-fv-hysteresis = <6>;
+	/* DC wireless charging */
+	qcom,dc-icl-ua = <1000000>;
+	qcom,disable-wipower;
+	fih,lcm-on-off-cur-control;
+	fih,remove-health-over-voltage;
+};
+
+&i2c_2 {
+	smb1351-charger@1d {
+		status = "disabled";
+	};
+};

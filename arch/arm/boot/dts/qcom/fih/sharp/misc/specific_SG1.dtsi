@@ -1,0 +1,19 @@
+&soc {
+	qcom,icnss@18800000 {
+				/delete-property/ qcom,wlan-msa-fixed-region;
+	};
+
+	qcom,msm_fastrpc {
+           /delete-property/ qcom,fastrpc-vmid-heap-shared;
+      };
+};
+
+/ {
+
+      reserved-memory {
+           /delete-node/ wlan_msa_guard@85600000;
+           /delete-node/ wlan_msa_mem@85700000;
+       
+
+    };
+};

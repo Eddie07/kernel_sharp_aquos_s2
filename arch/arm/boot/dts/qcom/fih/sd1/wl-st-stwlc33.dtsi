@@ -1,0 +1,7 @@
+&i2c_2 {
+	wl_stwlc33@61 {
+		compatible = "wl,stwlc33";
+		reg = <0x61>;
+		status = "okay";
+	};
+};
