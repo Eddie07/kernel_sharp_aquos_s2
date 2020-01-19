@@ -211,6 +211,7 @@ dtb-$(CONFIG_ARCH_MSM8998) += msm8998-sim.dtb \
 endif
 
 dtb-$(CONFIG_ARCH_MSMHAMSTER) += msmhamster-rumi.dtb
+
 #Fihtdc@Alan,  heineken_SS2, SG1, remove nokia
 dtb-$(CONFIG_SHARP_SDM630_SDM660_PROJS) += sdm630-mtp-ss2-dvt.dtb \
         sdm660-mtp-sat-dvt.dtb \
@@ -224,40 +225,39 @@ dtb-$(CONFIG_SHARP_SDM630_SDM660_PROJS) += sdm630-mtp-ss2-dvt.dtb \
 
 #Fihtdc@Alan, add
 dtb-$(CONFIG_FIH_SDM630_SDM660_PROJS) += sdm660-mtp.dtb \
-	sdm630-mtp.dtb \
-	sdm660-qrd.dtb \
-	sdm630-pm660a-qrd.dtb \
-	sdm660-cdp-c1n-preEVT.dtb \
-	sdm660-cdp-c1n-EVT.dtb \
-	sdm660-mtp-c1n-preEVT.dtb \
-	sdm660-mtp-c1n-EVT.dtb \
-	sdm660-mtp-c1n-EVT2.0.dtb \
-	sdm660-mtp-c1n-EVT2.1.dtb \
-	sdm660-mtp-pl2-preEVT.dtb \
-	sdm630-cdp-c1n-preEVT.dtb \
-	sdm630-cdp-c1n-EVT.dtb \
-	sdm630-mtp-c1n-preEVT.dtb \
-  sdm630-mtp-c1n-EVT.dtb \
-	sdm630-mtp-c1n-EVT2.0.dtb \
-	sdm630-mtp-c1n-EVT2.1.dtb \
-	sdm630-mtp-pl2-preEVT.dtb \
-	sdm630-mtp-pl2-EVT1.5.dtb \
-	sdm630-mtp-pl2-EVT1.5-CD.dtb \
-	sdm630-mtp-pl2-dvt.dtb \
-	sdm660-mtp-b2n-preEVT.dtb \
-	sdm660-mtp-b2n-EVT.dtb \
-	sdm660-mtp-b2n-EVT1.5.dtb \
-	sdm660-mtp-b2n-DVT-QC.dtb \
-	sdm660-mtp-b2n-DVT-TI.dtb \
 	sdm636-mtp-drg-preEVT.dtb \
-	sdm636-mtp-b2n-preEVT.dtb \
 	sdm636-mtp-ctl-EVT.dtb \
-  sdm636-mtp-drg-EVT.dtb \
+        sdm636-mtp-drg-EVT.dtb \
 	sdm636-mtp-ctl-DVT.dtb \
-  sdm636-mtp-drg-DVT1.5.dtb \
-  sdm660-mtp-drg-pro-EVT.dtb \
-  sdm636-mtp-hc1-preEVT.dtb \
+        sdm636-mtp-drg-DVT1.5.dtb \
+        sdm660-mtp-drg-pro-EVT.dtb
 
+#sdm630-mtp-c1n-EVT.dtb \
+#	sdm630-mtp-c1n-EVT2.0.dtb \
+#	sdm630-mtp-c1n-EVT2.1.dtb \
+#	sdm630-mtp.dtb \
+#	sdm660-qrd.dtb \
+#	sdm630-pm660a-qrd.dtb \
+#	sdm660-cdp-c1n-preEVT.dtb \
+#	sdm660-cdp-c1n-EVT.dtb \
+#	sdm660-mtp-c1n-preEVT.dtb \
+#	sdm660-mtp-c1n-EVT.dtb \
+#	sdm660-mtp-c1n-EVT2.0.dtb \
+#	sdm660-mtp-c1n-EVT2.1.dtb \
+##	sdm630-cdp-c1n-preEVT.dtb \
+#	sdm630-cdp-c1n-EVT.dtb \
+#	sdm630-mtp-c1n-preEVT.dtb \
+#	sdm636-mtp-b2n-preEVT.dtb \
+#	sdm660-mtp-pl2-preEVT.dtb \
+#	sdm630-mtp-pl2-preEVT.dtb \
+#	sdm630-mtp-pl2-EVT1.5.dtb \
+#	sdm630-mtp-pl2-EVT1.5-CD.dtb \
+#	sdm630-mtp-pl2-dvt.dtb \
+#	sdm660-mtp-b2n-preEVT.dtb \
+#	sdm660-mtp-b2n-EVT.dtb \
+#	sdm660-mtp-b2n-EVT1.5.dtb \
+#	sdm660-mtp-b2n-DVT-QC.dtb \
+#	sdm660-mtp-b2n-DVT-TI.dtb \
 #dtb-$(CONFIG_ARCH_SDM660) += sdm660-sim.dtb \
 #	sdm660-internal-codec-cdp.dtb \
 #	sdm660-internal-codec-mtp.dtb \

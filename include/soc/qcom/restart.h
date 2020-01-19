@@ -20,9 +20,5 @@
 void msm_set_restart_mode(int mode);
 extern int pmic_reset_irq;
 
-
-unsigned int restart_reason_rd(void);
-void restart_reason_wt(unsigned int rere);
-
 #endif
 

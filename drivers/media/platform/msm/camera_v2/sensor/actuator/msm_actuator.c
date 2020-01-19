@@ -19,6 +19,7 @@
 #include "../fih_camera_bbs.h"  //add
 #include "fih_msm_actuator_recover.h" //add
 
+
 DEFINE_MSM_MUTEX(msm_actuator_mutex);
 
 #undef CDBG
@@ -44,6 +45,7 @@ static struct msm_actuator msm_bivcm_actuator_table;
 extern int fih_camera_bbs_set(int id,int master,unsigned short sid,int module);//add
 extern void fih_camera_bbs_by_cci(int master,int sid,int error_code);//add
 extern char* fih_camera_bbs_get_name_by_cci(int master,int sid);//add
+
 
 static struct i2c_driver msm_actuator_i2c_driver;
 static struct msm_actuator *actuators[] = {
@@ -775,7 +777,7 @@ static int32_t msm_actuator_bivcm_move_focus(
 	while (a_ctrl->curr_step_pos != dest_step_pos) {
 		if (a_ctrl->curr_region_index >= a_ctrl->region_size)
 			break;
-			
+
 		step_boundary =
 			a_ctrl->region_params[a_ctrl->curr_region_index].
 			step_bound[dir];
@@ -1328,7 +1330,9 @@ static int32_t msm_actuator_set_param(struct msm_actuator_ctrl_t *a_ctrl,
 		cci_client->cci_i2c_master = a_ctrl->cci_master;
 		cci_client->i2c_freq_mode =
 			set_info->actuator_params.i2c_freq_mode;
+
 		fih_camera_bbs_set((int)a_ctrl->pdev->id,cci_client->cci_i2c_master,(unsigned short)cci_client->sid,FIH_BBS_CAMERA_MODULE_ACTUATOR);//add
+
 	} else {
 		a_ctrl->i2c_client.client->addr =
 			set_info->actuator_params.i2c_addr;
@@ -1605,7 +1609,6 @@ static long msm_actuator_subdev_ioctl(struct v4l2_subdev *sd,
 	int rc;
 	struct msm_actuator_ctrl_t *a_ctrl = v4l2_get_subdevdata(sd);
 	void __user *argp = (void __user *)arg;
-
 	CDBG("Enter\n");
 	CDBG("%s:%d a_ctrl %pK argp %pK\n", __func__, __LINE__, a_ctrl, argp);
 	switch (cmd) {
@@ -1616,7 +1619,6 @@ static long msm_actuator_subdev_ioctl(struct v4l2_subdev *sd,
 	case MSM_SD_NOTIFY_FREEZE:
 		return 0;
 	case MSM_SD_UNNOTIFY_FREEZE:
-
 		return 0;
 	case MSM_SD_SHUTDOWN:
 		if (!a_ctrl->i2c_client.i2c_func_tbl) {

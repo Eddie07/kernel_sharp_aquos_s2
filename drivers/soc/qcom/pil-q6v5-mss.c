@@ -42,10 +42,6 @@
 #define MAX_SSR_REASON_LEN	130U
 #define STOP_ACK_TIMEOUT_MS	1000
 
-/* FIH, to support fih apr { */
-//VNA-3504, add modem failure reason
-char fih_failure_reason[MAX_SSR_REASON_LEN];
-/* FIH, to support fih apr } */
 #define subsys_to_drv(d) container_of(d, struct modem_data, subsys_desc)
 
 static void log_modem_sfr(void)
@@ -207,8 +203,6 @@ static int pil_subsys_init(struct modem_data *drv,
 					struct platform_device *pdev)
 {
 	int ret;
-	// init the fih_failure_reason.
-	fih_failure_reason[0] = '\0';
 
 	drv->subsys_desc.name = "modem";
 	drv->subsys_desc.dev = &pdev->dev;

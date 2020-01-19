@@ -1667,6 +1667,10 @@ static int mlx4_en_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
 		err = mlx4_en_get_flow(dev, cmd, cmd->fs.location);
 		break;
 	case ETHTOOL_GRXCLSRLALL:
+<<<<<<< HEAD
+=======
+		cmd->data = MAX_NUM_OF_FS_RULES;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 		while ((!err || err == -ENOENT) && priority < cmd->rule_cnt) {
 			err = mlx4_en_get_flow(dev, cmd, i);
 			if (!err)

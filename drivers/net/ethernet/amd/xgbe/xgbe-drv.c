@@ -1390,7 +1390,7 @@ static int xgbe_close(struct net_device *netdev)
 	return 0;
 }
 
-static int xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
+static netdev_tx_t xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct xgbe_prv_data *pdata = netdev_priv(netdev);
 	struct xgbe_hw_if *hw_if = &pdata->hw_if;
@@ -1399,7 +1399,11 @@ static int xgbe_xmit(struct sk_buff *skb, struct net_device *netdev)
 	struct xgbe_ring *ring;
 	struct xgbe_packet_data *packet;
 	struct netdev_queue *txq;
+<<<<<<< HEAD
 	int ret;
+=======
+	netdev_tx_t ret;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	DBGPR("-->xgbe_xmit: skb->len = %d\n", skb->len);
 

@@ -463,11 +463,23 @@ struct sst_dsp *sst_dsp_new(struct device *dev,
 		goto irq_err;
 
 	err = sst_dma_new(sst);
+<<<<<<< HEAD
 	if (err)
 		dev_warn(dev, "sst_dma_new failed %d\n", err);
 
 	return sst;
 
+=======
+	if (err)  {
+		dev_err(dev, "sst_dma_new failed %d\n", err);
+		goto dma_err;
+	}
+
+	return sst;
+
+dma_err:
+	free_irq(sst->irq, sst);
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 irq_err:
 	if (sst->ops->free)
 		sst->ops->free(sst);

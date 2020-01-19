@@ -69,6 +69,7 @@ bool su_visible(void);
 void su_exec(void);
 void su_exit(void);
 
+
 #define SCHED_ATTR_SIZE_VER0	48	/* sizeof first published struct */
 
 /*
@@ -2406,7 +2407,6 @@ extern void thread_group_cputime_adjusted(struct task_struct *p, cputime_t *ut, 
 #define PF_KTHREAD	0x00200000	/* I am a kernel thread */
 #define PF_RANDOMIZE	0x00400000	/* randomize virtual address space */
 #define PF_SWAPWRITE	0x00800000	/* Allowed to write to swap */
-#define PF_PERF_CRITICAL 0x01000000	/* Thread is performance-critical */
 #define PF_NO_SETAFFINITY 0x04000000	/* Userland is not allowed to meddle with cpus_allowed */
 #define PF_MCE_EARLY    0x08000000      /* Early kill for mce process policy */
 #define PF_MUTEX_TESTER	0x20000000	/* Thread belongs to the rt mutex tester */
@@ -2415,6 +2415,7 @@ extern void thread_group_cputime_adjusted(struct task_struct *p, cputime_t *ut, 
 
 
 #define PF_SU		0x10000000      /* task is su */
+
 
 /*
  * Only the _current_ task can read/write to tsk->flags, but other
@@ -3729,8 +3730,6 @@ static inline unsigned long rlimit_max(unsigned int limit)
 #define SCHED_CPUFREQ_RT        (1U << 0)
 #define SCHED_CPUFREQ_DL        (1U << 1)
 #define SCHED_CPUFREQ_IOWAIT    (1U << 2)
-#define SCHED_CPUFREQ_INTERCLUSTER_MIG (1U << 3)
-
 #ifdef CONFIG_CPU_FREQ
 struct update_util_data {
 	void (*func)(struct update_util_data *data, u64 time, unsigned int flags);

@@ -2006,8 +2006,16 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
 		ttl = info->key.ttl;
 		tos = info->key.tos;
 
+<<<<<<< HEAD
 		if (info->options_len)
 			md = ip_tunnel_info_opts(info);
+=======
+		if (info->options_len) {
+			if (info->options_len < sizeof(*md))
+				goto drop;
+			md = ip_tunnel_info_opts(info);
+		}
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	} else {
 		md->gbp = skb->mark;
 	}

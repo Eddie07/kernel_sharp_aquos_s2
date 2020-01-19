@@ -311,7 +311,11 @@
 			pinctrl-1 = <&i2c3_sleep_mode>;
 		};
 
+<<<<<<< HEAD
 		ssp@80002000 {
+=======
+		spi@80002000 {
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 			pinctrl-names = "default";
 			pinctrl-0 = <&ssp0_snowball_mode>;
 		};

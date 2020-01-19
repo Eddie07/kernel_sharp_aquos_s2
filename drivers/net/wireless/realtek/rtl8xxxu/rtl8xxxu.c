@@ -5331,6 +5331,10 @@ static int rtl8xxxu_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		break;
 	case WLAN_CIPHER_SUITE_TKIP:
 		key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIC;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	default:
 		return -EOPNOTSUPP;
 	}

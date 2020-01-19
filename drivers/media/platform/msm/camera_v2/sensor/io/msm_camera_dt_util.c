@@ -24,7 +24,7 @@
 
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
-extern void tca6416_write_ker(int,int,int);
+
 int msm_camera_fill_vreg_params(struct camera_vreg_t *cam_vreg,
 	int num_vreg, struct msm_sensor_power_setting *power_setting,
 	uint16_t power_setting_size)
@@ -1558,7 +1558,7 @@ int msm_camera_power_up(struct msm_camera_power_ctrl_t *ctrl,
             #endif
             pr_err("wbl %s vreg index val =%ld  gpio_num=%d\n", __func__,
                     power_setting->config_val,power_setting->seq_val);
-            tca6416_write_ker(power_setting->seq_val,power_setting->config_val,power_setting->delay);
+        //    tca6416_write_ker(power_setting->seq_val,power_setting->config_val,power_setting->delay);
 
             break;
 		default:
@@ -1769,7 +1769,7 @@ int msm_camera_power_down(struct msm_camera_power_ctrl_t *ctrl,
             #endif
             pr_err("wbl %s vreg index val =%ld  gpio_num=%d\n", __func__,
                     pd->config_val,pd->seq_val);
-            tca6416_write_ker(pd->seq_val,pd->config_val,pd->delay);
+          //  tca6416_write_ker(pd->seq_val,pd->config_val,pd->delay);
 
             break;
 		default:

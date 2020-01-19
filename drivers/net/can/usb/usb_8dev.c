@@ -1010,9 +1010,14 @@ static void usb_8dev_disconnect(struct usb_interface *intf)
 		netdev_info(priv->netdev, "device disconnected\n");
 
 		unregister_netdev(priv->netdev);
+<<<<<<< HEAD
 		free_candev(priv->netdev);
 
 		unlink_all_urbs(priv);
+=======
+		unlink_all_urbs(priv);
+		free_candev(priv->netdev);
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	}
 
 }

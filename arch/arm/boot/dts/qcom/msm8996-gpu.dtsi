@@ -1,7 +1,4 @@
 /* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
-=======
-/* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -84,13 +81,6 @@
 
 		qcom,gpu-qdss-stm = <0x081c0000 0x40000>; // base addr, size
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		qcom,tsens-name = "tsens_tz_sensor14";
-=======
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 		/* Trace bus */
 		coresight-id = <300>;
 		coresight-name = "coresight-gfx";

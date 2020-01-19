@@ -2,6 +2,7 @@
  *
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Copyright (C) 2014-2015 Renesas Electronics Corporation
 =======
  * Copyright (C) 2014-2019 Renesas Electronics Corporation
@@ -9,6 +10,9 @@
 =======
  * Copyright (C) 2014-2019 Renesas Electronics Corporation
 >>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
+=======
+ * Copyright (C) 2014-2019 Renesas Electronics Corporation
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
  * Copyright (C) 2015 Renesas Solutions Corp.
  * Copyright (C) 2015 Cogent Embedded, Inc. <source@cogentembedded.com>
  *
@@ -1527,12 +1531,16 @@ static int ravb_close(struct net_device *ndev)
 		list_del(&ts_skb->list);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		kfree_skb(ts_skb->skb);
 >>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 =======
 		kfree_skb(ts_skb->skb);
 >>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
+=======
+		kfree_skb(ts_skb->skb);
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 		kfree(ts_skb);
 	}
 

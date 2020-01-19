@@ -620,7 +620,10 @@ err_tx_unbind:
 err_unmap:
 	xenvif_unmap_frontend_rings(queue);
 err:
+<<<<<<< HEAD
 	module_put(THIS_MODULE);
+=======
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	return err;
 }
 

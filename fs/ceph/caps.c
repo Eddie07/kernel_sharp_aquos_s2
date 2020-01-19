@@ -926,6 +926,14 @@ void __ceph_remove_cap(struct ceph_cap *cap, bool queue_release)
 
 	dout("__ceph_remove_cap %p from %p\n", cap, &ci->vfs_inode);
 
+<<<<<<< HEAD
+=======
+	/* remove from inode's cap rbtree, and clear auth cap */
+	rb_erase(&cap->ci_node, &ci->i_caps);
+	if (ci->i_auth_cap == cap)
+		ci->i_auth_cap = NULL;
+
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	/* remove from session list */
 	spin_lock(&session->s_cap_lock);
 	if (session->s_cap_iterator == cap) {
@@ -961,11 +969,14 @@ void __ceph_remove_cap(struct ceph_cap *cap, bool queue_release)
 
 	spin_unlock(&session->s_cap_lock);
 
+<<<<<<< HEAD
 	/* remove from inode list */
 	rb_erase(&cap->ci_node, &ci->i_caps);
 	if (ci->i_auth_cap == cap)
 		ci->i_auth_cap = NULL;
 
+=======
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	if (removed)
 		ceph_put_cap(mdsc, cap);
 

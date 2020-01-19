@@ -115,6 +115,10 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
 		ret = -EPROBE_DEFER;
 		goto fail;
 	}
+<<<<<<< HEAD
+=======
+	put_device(&ssi_pdev->dev);
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	codec_dev = of_find_i2c_device_by_node(codec_np);
 	if (!codec_dev) {
 		dev_err(&pdev->dev, "failed to find codec platform device\n");

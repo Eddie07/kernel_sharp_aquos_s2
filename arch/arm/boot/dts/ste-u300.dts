@@ -451,7 +451,11 @@
 			dma-names = "rx";
 		};
 
+<<<<<<< HEAD
 		spi: ssp@c0006000 {
+=======
+		spi: spi@c0006000 {
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 			compatible = "arm,pl022", "arm,primecell";
 			reg = <0xc0006000 0x1000>;
 			interrupt-parent = <&vica>;

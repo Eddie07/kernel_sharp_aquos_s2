@@ -5828,6 +5828,7 @@ int snd_hda_gen_init(struct hda_codec *codec)
 
 	if (!spec->skip_verbs)
 		snd_hda_apply_verbs(codec);
+
 	init_multi_out(codec);
 	init_extra_out(codec);
 	init_multi_io(codec);

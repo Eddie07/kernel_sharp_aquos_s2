@@ -451,7 +451,10 @@ static void tsi108_stat_carry(struct net_device *dev)
 			      &data->tx_pause_drop);
 
 	spin_unlock_irqrestore(&data->misclock, flags);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 }
 
 /* Read a stat counter atomically with respect to carries.

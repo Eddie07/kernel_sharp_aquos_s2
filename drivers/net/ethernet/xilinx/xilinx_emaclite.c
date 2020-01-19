@@ -1008,9 +1008,16 @@ static int xemaclite_close(struct net_device *dev)
  * deferred and the Tx queue is stopped so that the deferred socket buffer can
  * be transmitted when the Emaclite device is free to transmit data.
  *
+<<<<<<< HEAD
  * Return:	0, always.
  */
 static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
+=======
+ * Return:	NETDEV_TX_OK, always.
+ */
+static netdev_tx_t
+xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 {
 	struct net_local *lp = netdev_priv(dev);
 	struct sk_buff *new_skb;
@@ -1031,7 +1038,11 @@ static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
 		/* Take the time stamp now, since we can't do this in an ISR. */
 		skb_tx_timestamp(new_skb);
 		spin_unlock_irqrestore(&lp->reset_lock, flags);
+<<<<<<< HEAD
 		return 0;
+=======
+		return NETDEV_TX_OK;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	}
 	spin_unlock_irqrestore(&lp->reset_lock, flags);
 
@@ -1040,7 +1051,11 @@ static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
 	dev->stats.tx_bytes += len;
 	dev_consume_skb_any(new_skb);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return NETDEV_TX_OK;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 }
 
 /**

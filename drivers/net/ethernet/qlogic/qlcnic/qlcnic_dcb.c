@@ -883,7 +883,11 @@ static u8 qlcnic_dcb_get_capability(struct net_device *netdev, int capid,
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 
 	if (!test_bit(QLCNIC_DCB_STATE, &adapter->dcb->state))
+<<<<<<< HEAD
 		return 0;
+=======
+		return 1;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	switch (capid) {
 	case DCB_CAP_ATTR_PG:

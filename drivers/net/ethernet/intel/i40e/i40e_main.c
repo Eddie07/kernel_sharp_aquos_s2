@@ -10828,6 +10828,10 @@ static void i40e_remove(struct pci_dev *pdev)
 	mutex_destroy(&hw->aq.asq_mutex);
 
 	/* Clear all dynamic memory lists of rings, q_vectors, and VSIs */
+<<<<<<< HEAD
+=======
+	rtnl_lock();
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	i40e_clear_interrupt_scheme(pf);
 	for (i = 0; i < pf->num_alloc_vsi; i++) {
 		if (pf->vsi[i]) {
@@ -10836,6 +10840,10 @@ static void i40e_remove(struct pci_dev *pdev)
 			pf->vsi[i] = NULL;
 		}
 	}
+<<<<<<< HEAD
+=======
+	rtnl_unlock();
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	for (i = 0; i < I40E_MAX_VEB; i++) {
 		kfree(pf->veb[i]);
@@ -10982,7 +10990,17 @@ static void i40e_shutdown(struct pci_dev *pdev)
 	wr32(hw, I40E_PFPM_WUFC,
 	     (pf->wol_en ? I40E_PFPM_WUFC_MAG_MASK : 0));
 
+<<<<<<< HEAD
 	i40e_clear_interrupt_scheme(pf);
+=======
+	/* Since we're going to destroy queues during the
+	 * i40e_clear_interrupt_scheme() we should hold the RTNL lock for this
+	 * whole section
+	 */
+	rtnl_lock();
+	i40e_clear_interrupt_scheme(pf);
+	rtnl_unlock();
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	if (system_state == SYSTEM_POWER_OFF) {
 		pci_wake_from_d3(pdev, pf->wol_en);

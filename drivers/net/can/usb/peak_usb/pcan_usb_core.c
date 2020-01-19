@@ -776,7 +776,11 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
 	dev = netdev_priv(netdev);
 
 	/* allocate a buffer large enough to send commands */
+<<<<<<< HEAD
 	dev->cmd_buf = kmalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
+=======
+	dev->cmd_buf = kzalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	if (!dev->cmd_buf) {
 		err = -ENOMEM;
 		goto lbl_free_candev;
@@ -883,7 +887,10 @@ static void peak_usb_disconnect(struct usb_interface *intf)
 		dev->state &= ~PCAN_USB_STATE_CONNECTED;
 		strlcpy(name, netdev->name, IFNAMSIZ);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 		unregister_netdev(netdev);
 
 		kfree(dev->cmd_buf);

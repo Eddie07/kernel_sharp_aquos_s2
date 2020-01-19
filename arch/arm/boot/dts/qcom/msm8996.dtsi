@@ -2140,16 +2140,8 @@
 			interrupts = <0 138 0>;
 			usb-phy = <&qusb_phy1>, <&usb_nop_phy>;
 			maximum-speed = "high-speed";
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 			snps,dis_u2_susphy_quirk;
 			snps,dis_enblslpm_quirk;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-			snps,dis_u2_susphy_quirk;
-			snps,dis_enblslpm_quirk;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 			snps,nominal-elastic-buffer;
 			snps,is-utmi-l1-suspend;
 			snps,hird-threshold = /bits/ 8 <0x0>;

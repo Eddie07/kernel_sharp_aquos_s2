@@ -354,14 +354,24 @@ static int sst_request_fw(struct intel_sst_drv *sst)
 	const struct firmware *fw;
 
 	retval = request_firmware(&fw, sst->firmware_name, sst->dev);
+<<<<<<< HEAD
 	if (fw == NULL) {
 		dev_err(sst->dev, "fw is returning as null\n");
 		return -EINVAL;
 	}
+=======
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	if (retval) {
 		dev_err(sst->dev, "request fw failed %d\n", retval);
 		return retval;
 	}
+<<<<<<< HEAD
+=======
+	if (fw == NULL) {
+		dev_err(sst->dev, "fw is returning as null\n");
+		return -EINVAL;
+	}
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	mutex_lock(&sst->sst_lock);
 	retval = sst_cache_and_parse_fw(sst, fw);
 	mutex_unlock(&sst->sst_lock);

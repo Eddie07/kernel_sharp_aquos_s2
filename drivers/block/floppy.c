@@ -3821,7 +3821,6 @@ static int compat_getdrvstat(int drive, bool poll,
 	mutex_unlock(&floppy_mutex);
 
 	if (copy_to_user(arg, &v, sizeof(struct compat_floppy_drive_struct)))
-
 		return -EFAULT;
 	return 0;
 Eintr:

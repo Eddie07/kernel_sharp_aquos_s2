@@ -1094,21 +1094,10 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
 		 *         goto out;
 		 */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		/* sllg %r1,%b3,3: %r1 = index * 8 */
-		EMIT6_DISP_LH(0xeb000000, 0x000d, REG_1, BPF_REG_3, REG_0, 3);
-=======
-=======
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 		/* llgfr %r1,%b3: %r1 = (u32) index */
 		EMIT4(0xb9160000, REG_1, BPF_REG_3);
 		/* sllg %r1,%r1,3: %r1 *= 8 */
 		EMIT6_DISP_LH(0xeb000000, 0x000d, REG_1, REG_1, REG_0, 3);
-<<<<<<< HEAD
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 		/* lg %r1,prog(%b2,%r1) */
 		EMIT6_DISP_LH(0xe3000000, 0x0004, REG_1, BPF_REG_2,
 			      REG_1, offsetof(struct bpf_array, ptrs));

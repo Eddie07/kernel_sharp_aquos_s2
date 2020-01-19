@@ -20,6 +20,7 @@
 #include "../codecs/sdm660_cdc/msm-digital-cdc.h"
 #include "../codecs/sdm660_cdc/msm-analog-cdc.h"
 #include "../codecs/msm_sdw/msm_sdw.h"
+#include <linux/pm_qos.h>
 #ifdef CONFIG_SND_SOC_AW87319
 #include <linux/delay.h>
 #include "aw87319.h"
@@ -35,6 +36,7 @@
 
 #define WSA8810_NAME_1 "wsa881x.20170211"
 #define WSA8810_NAME_2 "wsa881x.20170212"
+#define MSM_LL_QOS_VALUE 300 /* time in us to ensure LPM doesn't go in C3/C4 */
 
 enum {
 	INT0_MI2S = 0,
@@ -489,7 +491,6 @@ done:
 static int is_ext_spk_gpio_support(struct platform_device *pdev,
 				   struct msm_asoc_mach_data *pdata)
 {
-
 	const char *spk_ext_pa = "qcom,msm-spk-ext-pa";
 
 	pr_debug("%s:Enter\n", __func__);
@@ -757,9 +758,8 @@ static int msm_int_enable_dig_cdc_clk(struct snd_soc_codec *codec,
 		cancel_delayed_work_sync(&pdata->disable_int_mclk0_work);
 		mutex_lock(&pdata->cdc_int_mclk0_mutex);
 		if (atomic_read(&pdata->int_mclk0_enabled) == true) {
-        pdata->digital_cdc_core_clk.clk_freq_in_hz =
-                               DEFAULT_MCLK_RATE;
-
+			pdata->digital_cdc_core_clk.clk_freq_in_hz =
+						DEFAULT_MCLK_RATE;
 			pdata->digital_cdc_core_clk.enable = 0;
 			ret = afe_set_lpass_clock_v2(
 				AFE_PORT_ID_INT0_MI2S_RX,
@@ -1087,17 +1087,16 @@ static int msm_int_mclk0_event(struct snd_soc_dapm_widget *w,
 	pdata = snd_soc_card_get_drvdata(codec->component.card);
 	pr_debug("%s: event = %d\n", __func__, event);
 	switch (event) {
-  case SND_SOC_DAPM_PRE_PMU:
-         ret = msm_cdc_pinctrl_select_active_state(pdata->pdm_gpio_p);
-         if (ret < 0) {
-                 pr_err("%s: gpio set cannot be activated %s\n",
-                        __func__, "int_pdm");
-                 return ret;
-         }
-         msm_int_enable_dig_cdc_clk(codec, 1, true);
-         msm_anlg_cdc_mclk_enable(codec, 1, true);
-         break;
-
+	case SND_SOC_DAPM_PRE_PMU:
+		ret = msm_cdc_pinctrl_select_active_state(pdata->pdm_gpio_p);
+		if (ret < 0) {
+			pr_err("%s: gpio set cannot be activated %s\n",
+			       __func__, "int_pdm");
+			return ret;
+		}
+		msm_int_enable_dig_cdc_clk(codec, 1, true);
+		msm_anlg_cdc_mclk_enable(codec, 1, true);
+		break;
 	case SND_SOC_DAPM_POST_PMD:
 		pr_debug("%s: mclk_res_ref = %d\n",
 			__func__, atomic_read(&pdata->int_mclk0_rsc_ref));
@@ -1107,10 +1106,10 @@ static int msm_int_mclk0_event(struct snd_soc_dapm_widget *w,
 					__func__, "int_pdm");
 			return ret;
 		}
-    pr_debug("%s: disabling MCLK\n", __func__);
-    /* disable the codec mclk config*/
-    msm_anlg_cdc_mclk_enable(codec, 0, true);
-    msm_int_enable_dig_cdc_clk(codec, 0, true);
+		pr_debug("%s: disabling MCLK\n", __func__);
+		/* disable the codec mclk config*/
+		msm_anlg_cdc_mclk_enable(codec, 0, true);
+		msm_int_enable_dig_cdc_clk(codec, 0, true);
 		break;
 	default:
 		pr_err("%s: invalid DAPM event %d\n", __func__, event);
@@ -1315,40 +1314,19 @@ static void msm_int_mi2s_snd_shutdown(struct snd_pcm_substream *substream)
 				ret);
 }
 
-static void *def_msm_int_wcd_mbhc_cal(struct snd_soc_card *card)
+static void *def_msm_int_wcd_mbhc_cal(void)
 {
 	void *msm_int_wcd_cal;
 	struct wcd_mbhc_btn_detect_cfg *btn_cfg;
 	u16 *btn_low, *btn_high;
-        //20180622- add for customized hs value >>
-	const char *hs_btn_vth_low = "fih,msm-btn-vol-thr-low";
-	const char *hs_btn_vth_high = "fih,msm-btn-vol-thr-high";
-	const char *hs_vhs_max = "fih,msm-hs-v-headset-max";
-        // assign default value
-	int l_v_hs_max = 1600;
-        int l_btn_low[5] = {100, 225, 440, 440, 440};
-	int l_btn_high[5] = {100, 225, 440, 440, 440};
-        int ret = 0;
-
-	ret = of_property_read_u32(card->dev->of_node, hs_vhs_max, &l_v_hs_max);
-	if(ret)
-		dev_err(card->dev,"%s: get vref property fail!\n", __func__);
-
-	ret = of_property_read_u32_array(card->dev->of_node, hs_btn_vth_low, l_btn_low, ARRAY_SIZE(l_btn_low));
-	if(ret)
-	   dev_err(card->dev,"%s: get btn low property fail!\n", __func__);
-
-	ret = of_property_read_u32_array(card->dev->of_node, hs_btn_vth_high, l_btn_high, ARRAY_SIZE(l_btn_high));
-	if(ret)
-	   dev_err(card->dev,"%s: get btn high property fail!\n", __func__);
-	 //20180622- add for customized hs value <<
 
 	msm_int_wcd_cal = kzalloc(WCD_MBHC_CAL_SIZE(WCD_MBHC_DEF_BUTTONS,
 				WCD_MBHC_DEF_RLOADS), GFP_KERNEL);
 	if (!msm_int_wcd_cal)
 		return NULL;
+
 #define S(X, Y) ((WCD_MBHC_CAL_PLUG_TYPE_PTR(msm_int_wcd_cal)->X) = (Y))
-	S(v_hs_max, l_v_hs_max);
+	S(v_hs_max, 1500);
 #undef S
 #define S(X, Y) ((WCD_MBHC_CAL_BTN_DET_PTR(msm_int_wcd_cal)->X) = (Y))
 	S(num_btn, WCD_MBHC_DEF_BUTTONS);
@@ -1371,16 +1349,16 @@ static void *def_msm_int_wcd_mbhc_cal(struct snd_soc_card *card)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	btn_low[0] = l_btn_low[0];
-	btn_high[0] = l_btn_high[0];
-	btn_low[1] = l_btn_low[1];
-	btn_high[1] = l_btn_high[1];
-	btn_low[2] = l_btn_low[2];
-	btn_high[2] = l_btn_high[2];
-	btn_low[3] = l_btn_low[3];
-	btn_high[3] = l_btn_high[3];
-	btn_low[4] = l_btn_low[4];
-	btn_high[4] = l_btn_high[4];
+	btn_low[0] = 75;
+	btn_high[0] = 75;
+	btn_low[1] = 150;
+	btn_high[1] = 150;
+	btn_low[2] = 225;
+	btn_high[2] = 225;
+	btn_low[3] = 450;
+	btn_high[3] = 450;
+	btn_low[4] = 500;
+	btn_high[4] = 500;
 
 	return msm_int_wcd_cal;
 }
@@ -1717,11 +1695,11 @@ static int msm_snd_card_late_probe(struct snd_soc_card *card)
 	}
 
 	ana_cdc = rtd->codec_dais[ANA_CDC]->codec;
-	mbhc_cfg_ptr->calibration = def_msm_int_wcd_mbhc_cal(card);
+	mbhc_cfg_ptr->calibration = def_msm_int_wcd_mbhc_cal();
 	if (!mbhc_cfg_ptr->calibration)
 		return -ENOMEM;
 
-        ret = msm_anlg_cdc_hs_detect(ana_cdc, mbhc_cfg_ptr);
+	ret = msm_anlg_cdc_hs_detect(ana_cdc, mbhc_cfg_ptr);
 	if (ret) {
 		dev_err(card->dev,
 			"%s: msm_anlg_cdc_hs_detect failed\n", __func__);
@@ -1757,6 +1735,29 @@ static struct snd_soc_ops msm_int_mi2s_be_ops = {
 static struct snd_soc_ops msm_sdw_mi2s_be_ops = {
 	.startup = msm_sdw_mi2s_snd_startup,
 	.shutdown = msm_sdw_mi2s_snd_shutdown,
+};
+
+static int msm_fe_qos_prepare(struct snd_pcm_substream *substream)
+{
+	cpumask_t mask;
+
+	if (pm_qos_request_active(&substream->latency_pm_qos_req))
+		pm_qos_remove_request(&substream->latency_pm_qos_req);
+
+	cpumask_clear(&mask);
+	cpumask_set_cpu(1, &mask); /* affine to core 1 */
+	cpumask_set_cpu(2, &mask); /* affine to core 2 */
+	cpumask_copy(&substream->latency_pm_qos_req.cpus_affine, &mask);
+	substream->latency_pm_qos_req.type = PM_QOS_REQ_AFFINE_CORES;
+
+	pm_qos_add_request(&substream->latency_pm_qos_req,
+				PM_QOS_CPU_DMA_LATENCY,
+				MSM_LL_QOS_VALUE);
+	return 0;
+}
+
+static struct snd_soc_ops msm_fe_qos_ops = {
+	.prepare = msm_fe_qos_prepare,
 };
 
 struct snd_soc_dai_link_component dlc_rx1[] = {
@@ -2015,6 +2016,7 @@ static struct snd_soc_dai_link msm_int_dai[] = {
 		/* this dai link has playback support */
 		.ignore_pmdown_time = 1,
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA5,
+		.ops = &msm_fe_qos_ops,
 	},
 	/* LSM FE */
 	{/* hw:x,14 */
@@ -2081,6 +2083,7 @@ static struct snd_soc_dai_link msm_int_dai[] = {
 		.ignore_pmdown_time = 1,
 		 /* this dai link has playback support */
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA8,
+		.ops = &msm_fe_qos_ops,
 	},
 	{/* hw:x,18 */
 		.name = "HDMI_RX_HOSTLESS",
@@ -3251,9 +3254,8 @@ static void msm_disable_int_mclk0(struct work_struct *work)
 			&& atomic_read(&pdata->int_mclk0_rsc_ref) == 0) {
 		pr_debug("Disable the mclk\n");
 		pdata->digital_cdc_core_clk.enable = 0;
-    pdata->digital_cdc_core_clk.clk_freq_in_hz =
-                          DEFAULT_MCLK_RATE;
-
+		pdata->digital_cdc_core_clk.clk_freq_in_hz =
+					DEFAULT_MCLK_RATE;
 		ret = afe_set_lpass_clock_v2(
 			AFE_PORT_ID_INT0_MI2S_RX,
 			&pdata->digital_cdc_core_clk);

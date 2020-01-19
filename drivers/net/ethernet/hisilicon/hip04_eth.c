@@ -174,6 +174,7 @@ struct hip04_priv {
 	dma_addr_t rx_phys[RX_DESC_NUM];
 	unsigned int rx_head;
 	unsigned int rx_buf_size;
+	unsigned int rx_cnt_remaining;
 
 	struct device_node *phy_node;
 	struct phy_device *phy;
@@ -186,15 +187,7 @@ struct hip04_priv {
 
 static inline unsigned int tx_count(unsigned int head, unsigned int tail)
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-	return (head - tail) % (TX_DESC_NUM - 1);
-=======
 	return (head - tail) % TX_DESC_NUM;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-	return (head - tail) % TX_DESC_NUM;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 }
 
 static void hip04_config_port(struct net_device *ndev, u32 speed, u32 duplex)
@@ -495,7 +488,6 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 	struct hip04_priv *priv = container_of(napi, struct hip04_priv, napi);
 	struct net_device *ndev = priv->ndev;
 	struct net_device_stats *stats = &ndev->stats;
-	unsigned int cnt = hip04_recv_cnt(priv);
 	struct rx_desc *desc;
 	struct sk_buff *skb;
 	unsigned char *buf;
@@ -506,12 +498,10 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 	u16 len;
 	u32 err;
 
-
 	/* clean up tx descriptors */
 	tx_remaining = hip04_tx_reclaim(ndev, false);
-
-
-	while (cnt && !last) {
+	priv->rx_cnt_remaining += hip04_recv_cnt(priv);
+	while (priv->rx_cnt_remaining && !last) {
 		buf = priv->rx_buf[priv->rx_head];
 		skb = build_skb(buf, priv->rx_buf_size);
 		if (unlikely(!skb))
@@ -546,32 +536,22 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 		buf = netdev_alloc_frag(priv->rx_buf_size);
 		if (!buf)
 			goto done;
-<<<<<<< HEAD
-<<<<<<< HEAD
-		phys = dma_map_single(&ndev->dev, buf,
-				      RX_BUF_SIZE, DMA_FROM_DEVICE);
-		if (dma_mapping_error(&ndev->dev, phys))
-=======
 		phys = dma_map_single(priv->dev, buf,
 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
 		if (dma_mapping_error(priv->dev, phys))
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-		phys = dma_map_single(priv->dev, buf,
-				      RX_BUF_SIZE, DMA_FROM_DEVICE);
-		if (dma_mapping_error(priv->dev, phys))
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 			goto done;
 		priv->rx_buf[priv->rx_head] = buf;
 		priv->rx_phys[priv->rx_head] = phys;
 		hip04_set_recv_desc(priv, phys);
 
 		priv->rx_head = RX_NEXT(priv->rx_head);
-		if (rx >= budget)
+		if (rx >= budget) {
+			--priv->rx_cnt_remaining;
 			goto done;
+		}
 
-		if (--cnt == 0)
-			cnt = hip04_recv_cnt(priv);
+		if (--priv->rx_cnt_remaining == 0)
+			priv->rx_cnt_remaining += hip04_recv_cnt(priv);
 	}
 
 	if (!(priv->reg_inten & RCV_INT)) {
@@ -581,16 +561,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 	}
 	napi_complete(napi);
 done:
-<<<<<<< HEAD
-<<<<<<< HEAD
-	/* clean up tx descriptors and start a new timer if necessary */
-	tx_remaining = hip04_tx_reclaim(ndev, false);
-=======
 	/* start a new timer if necessary */
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-	/* start a new timer if necessary */
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	if (rx < budget && tx_remaining)
 		hip04_start_tx_timer(priv);
 
@@ -665,6 +636,7 @@ static int hip04_mac_open(struct net_device *ndev)
 	int i;
 
 	priv->rx_head = 0;
+	priv->rx_cnt_remaining = 0;
 	priv->tx_head = 0;
 	priv->tx_tail = 0;
 	hip04_reset_ppe(priv);
@@ -672,21 +644,9 @@ static int hip04_mac_open(struct net_device *ndev)
 	for (i = 0; i < RX_DESC_NUM; i++) {
 		dma_addr_t phys;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		phys = dma_map_single(&ndev->dev, priv->rx_buf[i],
-				      RX_BUF_SIZE, DMA_FROM_DEVICE);
-		if (dma_mapping_error(&ndev->dev, phys))
-=======
 		phys = dma_map_single(priv->dev, priv->rx_buf[i],
 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
 		if (dma_mapping_error(priv->dev, phys))
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-		phys = dma_map_single(priv->dev, priv->rx_buf[i],
-				      RX_BUF_SIZE, DMA_FROM_DEVICE);
-		if (dma_mapping_error(priv->dev, phys))
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 			return -EIO;
 
 		priv->rx_phys[i] = phys;
@@ -720,15 +680,7 @@ static int hip04_mac_stop(struct net_device *ndev)
 
 	for (i = 0; i < RX_DESC_NUM; i++) {
 		if (priv->rx_phys[i]) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-			dma_unmap_single(&ndev->dev, priv->rx_phys[i],
-=======
 			dma_unmap_single(priv->dev, priv->rx_phys[i],
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-			dma_unmap_single(priv->dev, priv->rx_phys[i],
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 					 RX_BUF_SIZE, DMA_FROM_DEVICE);
 			priv->rx_phys[i] = 0;
 		}
@@ -879,14 +831,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	priv = netdev_priv(ndev);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 	priv->dev = d;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-	priv->dev = d;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	priv->ndev = ndev;
 	platform_set_drvdata(pdev, ndev);
 
@@ -1006,7 +951,6 @@ static int hip04_remove(struct platform_device *pdev)
 
 	hip04_free_ring(ndev, d);
 	unregister_netdev(ndev);
-	free_irq(ndev->irq, ndev);
 	of_node_put(priv->phy_node);
 	cancel_work_sync(&priv->tx_timeout_task);
 	free_netdev(ndev);

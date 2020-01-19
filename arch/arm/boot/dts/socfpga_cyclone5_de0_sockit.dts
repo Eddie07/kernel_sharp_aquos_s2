@@ -88,7 +88,11 @@
 	status = "okay";
 	speed-mode = <0>;
 
+<<<<<<< HEAD
 	adxl345: adxl345@0 {
+=======
+	adxl345: adxl345@53 {
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 		compatible = "adi,adxl345";
 		reg = <0x53>;
 

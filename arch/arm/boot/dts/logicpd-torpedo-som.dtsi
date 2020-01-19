@@ -169,3 +169,10 @@
 &twl_gpio {
 	ti,use-leds;
 };
+<<<<<<< HEAD
+=======
+
+&twl_keypad {
+	status = "disabled";
+};
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347

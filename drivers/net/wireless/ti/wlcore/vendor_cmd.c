@@ -66,7 +66,11 @@ wlcore_vendor_cmd_smart_config_start(struct wiphy *wiphy,
 out:
 	mutex_unlock(&wl->mutex);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 }
 
 static int

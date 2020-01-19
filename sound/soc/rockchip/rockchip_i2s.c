@@ -530,7 +530,11 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
 	ret = devm_snd_dmaengine_pcm_register(&pdev->dev, NULL, 0);
 	if (ret) {
 		dev_err(&pdev->dev, "Could not register PCM\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_suspend;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	}
 
 	return 0;

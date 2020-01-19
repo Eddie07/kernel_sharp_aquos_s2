@@ -11,15 +11,8 @@
 
 #include "misc.h"
 #include "../string.h"
-<<<<<<< HEAD
-
 #include <asm/bootparam_utils.h>
 
-
-=======
-#include <asm/bootparam_utils.h>
-
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 /* WARNING!!
  * This code is compiled with -fPIC and it is relocated dynamically
  * at run time, but no relocation processing is performed.

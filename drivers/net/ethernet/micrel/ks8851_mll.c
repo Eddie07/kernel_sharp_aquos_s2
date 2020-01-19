@@ -1020,9 +1020,15 @@ static void ks_write_qmu(struct ks_net *ks, u8 *pdata, u16 len)
  * spin_lock_irqsave is required because tx and rx should be mutual exclusive.
  * So while tx is in-progress, prevent IRQ interrupt from happenning.
  */
+<<<<<<< HEAD
 static int ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	int retv = NETDEV_TX_OK;
+=======
+static netdev_tx_t ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+{
+	netdev_tx_t retv = NETDEV_TX_OK;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	struct ks_net *ks = netdev_priv(netdev);
 
 	disable_irq(netdev->irq);

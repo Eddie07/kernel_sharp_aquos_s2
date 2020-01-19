@@ -211,6 +211,11 @@ struct ipc_message *sst_ipc_reply_find_msg(struct sst_generic_ipc *ipc,
 
 	if (ipc->ops.reply_msg_match != NULL)
 		header = ipc->ops.reply_msg_match(header, &mask);
+<<<<<<< HEAD
+=======
+	else
+		mask = (u64)-1;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	if (list_empty(&ipc->rx_list)) {
 		dev_err(ipc->dev, "error: rx list empty but received 0x%llx\n",

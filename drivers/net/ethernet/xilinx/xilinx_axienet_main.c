@@ -656,7 +656,12 @@ static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
  * start the transmission. Additionally if checksum offloading is supported,
  * it populates AXI Stream Control fields with appropriate values.
  */
+<<<<<<< HEAD
 static int axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+=======
+static netdev_tx_t
+axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 {
 	u32 ii;
 	u32 num_frag;

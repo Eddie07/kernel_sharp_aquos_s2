@@ -273,6 +273,6 @@
 	qcom,fs-curr-ua = <20000>;
 	qcom,led-strings-list = [00 01 02];	/* 5S3P  */
 	/* TBD */
-	qcom,en-cabc;	/* SW4-HL-Display-ImplementCECTCABC-00+_20160126 */
+	//qcom,en-cabc;	/* SW4-HL-Display-ImplementCECTCABC-00+_20160126 */
 };
 

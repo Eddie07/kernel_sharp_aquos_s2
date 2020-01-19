@@ -53,19 +53,12 @@ int physical_channel_send(struct physical_channel *pchan,
 	GIPC_Result result = GIPC_Success;
 	uint8_t *msg = NULL;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	if (!dev) {
 		pr_err("no send pchan %s has been de-alloced msg for %zd bytes\n",
 			pchan->name);
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	spin_lock_bh(&dev->io_lock);
 
 	result = GIPC_PrepareMessage(dev->endpoint, sizebytes+sizeof(*header),

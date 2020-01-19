@@ -1059,9 +1059,9 @@ CSID_TG:
 	pr_err("%s probe succeeded", slave_info->sensor_name);
 	fih_camera_dev_init(slave_info);
 
-//	s_ctrl->bypass_video_node_creation =
-//		slave_info->bypass_video_node_creation;
-	pr_err("%s wbl E slave_info->sensor_name = %s \n", __func__, slave_info->sensor_name);
+	s_ctrl->bypass_video_node_creation =
+		slave_info->bypass_video_node_creation;
+
 
 	/*
 	 * Create /dev/videoX node, comment for now until dummy /dev/videoX

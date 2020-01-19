@@ -3378,18 +3378,9 @@ out_free_dev:
 		if (adapter->port[i])
 			free_netdev(adapter->port[i]);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 out_free_adapter_nofail:
 	kfree_skb(adapter->nofail_skb);
 
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
-=======
-out_free_adapter_nofail:
-	kfree_skb(adapter->nofail_skb);
-
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 out_free_adapter:
 	kfree(adapter);
 

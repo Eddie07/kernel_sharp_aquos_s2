@@ -6341,11 +6341,24 @@ struct wmi_ch_info_ev_arg {
 	__le32 mac_clk_mhz;
 };
 
+<<<<<<< HEAD
+=======
+/* From 10.4 firmware, not sure all have the same values. */
+enum wmi_vdev_start_status {
+	WMI_VDEV_START_OK = 0,
+	WMI_VDEV_START_CHAN_INVALID,
+};
+
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 struct wmi_vdev_start_ev_arg {
 	__le32 vdev_id;
 	__le32 req_id;
 	__le32 resp_type; /* %WMI_VDEV_RESP_ */
+<<<<<<< HEAD
 	__le32 status;
+=======
+	__le32 status; /* See wmi_vdev_start_status enum above */
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 };
 
 struct wmi_peer_kick_ev_arg {

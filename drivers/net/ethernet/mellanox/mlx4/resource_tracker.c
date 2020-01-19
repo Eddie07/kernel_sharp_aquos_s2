@@ -463,12 +463,40 @@ void mlx4_init_quotas(struct mlx4_dev *dev)
 		priv->mfunc.master.res_tracker.res_alloc[RES_MPT].quota[pf];
 }
 
+<<<<<<< HEAD
 static int get_max_gauranteed_vfs_counter(struct mlx4_dev *dev)
 {
 	/* reduce the sink counter */
 	return (dev->caps.max_counters - 1 -
 		(MLX4_PF_COUNTERS_PER_PORT * MLX4_MAX_PORTS))
 		/ MLX4_MAX_PORTS;
+=======
+static int
+mlx4_calc_res_counter_guaranteed(struct mlx4_dev *dev,
+				 struct resource_allocator *res_alloc,
+				 int vf)
+{
+	struct mlx4_active_ports actv_ports;
+	int ports, counters_guaranteed;
+
+	/* For master, only allocate according to the number of phys ports */
+	if (vf == mlx4_master_func_num(dev))
+		return MLX4_PF_COUNTERS_PER_PORT * dev->caps.num_ports;
+
+	/* calculate real number of ports for the VF */
+	actv_ports = mlx4_get_active_ports(dev, vf);
+	ports = bitmap_weight(actv_ports.ports, dev->caps.num_ports);
+	counters_guaranteed = ports * MLX4_VF_COUNTERS_PER_PORT;
+
+	/* If we do not have enough counters for this VF, do not
+	 * allocate any for it. '-1' to reduce the sink counter.
+	 */
+	if ((res_alloc->res_reserved + counters_guaranteed) >
+	    (dev->caps.max_counters - 1))
+		return 0;
+
+	return counters_guaranteed;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 }
 
 int mlx4_init_resource_tracker(struct mlx4_dev *dev)
@@ -476,7 +504,10 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int i, j;
 	int t;
+<<<<<<< HEAD
 	int max_vfs_guarantee_counter = get_max_gauranteed_vfs_counter(dev);
+=======
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	priv->mfunc.master.res_tracker.slave_list =
 		kzalloc(dev->num_slaves * sizeof(struct slave_list),
@@ -593,6 +624,7 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 				break;
 			case RES_COUNTER:
 				res_alloc->quota[t] = dev->caps.max_counters;
+<<<<<<< HEAD
 				if (t == mlx4_master_func_num(dev))
 					res_alloc->guaranteed[t] =
 						MLX4_PF_COUNTERS_PER_PORT *
@@ -603,6 +635,10 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 						MLX4_MAX_PORTS;
 				else
 					res_alloc->guaranteed[t] = 0;
+=======
+				res_alloc->guaranteed[t] =
+					mlx4_calc_res_counter_guaranteed(dev, res_alloc, t);
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 				res_alloc->res_free -= res_alloc->guaranteed[t];
 				break;
 			default:

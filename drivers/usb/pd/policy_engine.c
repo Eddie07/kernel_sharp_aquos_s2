@@ -28,6 +28,8 @@
 #include <linux/usb/class-dual-role.h>
 #include <linux/usb/usbpd.h>
 #include "usbpd.h"
+extern int typec;
+int typec=0;
 
 /* To start USB stack for USB3.1 complaince testing */
 static bool usb_compliance_mode;
@@ -1901,6 +1903,7 @@ static void usbpd_sm(struct work_struct *w)
 		}
 
 		usbpd_info(&pd->dev, "USB Type-C disconnect\n");
+               typec=0;
 
 		if (pd->pd_phy_opened) {
 			pd_phy_close();
@@ -2921,6 +2924,7 @@ static int psy_changed(struct notifier_block *nb, unsigned long evt, void *ptr)
 	case POWER_SUPPLY_TYPEC_SOURCE_HIGH:
 		usbpd_info(&pd->dev, "Type-C Source (%s) connected\n",
 				src_current(typec_mode));
+   typec=1;
 
 		/* if waiting for SinkTxOk to start an AMS */
 		if (pd->spec_rev == USBPD_REV_30 &&

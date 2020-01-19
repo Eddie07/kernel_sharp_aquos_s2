@@ -804,7 +804,7 @@ static void thermal_zone_device_set_polling(struct thermal_zone_device *tz,
 		mod_delayed_work(system_freezable_wq, &tz->poll_queue,
 				 msecs_to_jiffies(delay));
 	else
-		cancel_delayed_work(&tz->poll_queue);
+		cancel_delayed_work_sync(&tz->poll_queue);
 }
 
 static void monitor_thermal_zone(struct thermal_zone_device *tz)
@@ -922,9 +922,14 @@ int thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp)
 		if (!ret && *temp < crit_temp)
 			*temp = tz->emul_temperature;
 	}
+   
  
 	mutex_unlock(&tz->lock);
 exit:
+  if (ret) { 
+           *temp = 750;
+            ret=0;
+            }
 	return ret;
 }
 EXPORT_SYMBOL_GPL(thermal_zone_get_temp);

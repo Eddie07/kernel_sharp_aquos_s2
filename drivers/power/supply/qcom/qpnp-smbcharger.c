@@ -1,5 +1,4 @@
 /* Copyright (c) 2014-2016, 2019 The Linux Foundation. All rights reserved.
-
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -145,10 +144,7 @@ struct smbchg_chip {
 	bool				vbat_above_headroom;
 	bool				force_aicl_rerun;
 	bool				hvdcp3_supported;
-<<<<<<< HEAD
-=======
 	bool				allow_hvdcp3_detection;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	bool				restricted_charging;
 	bool				skip_usb_suspend_for_fake_battery;
 	bool				hvdcp_not_supported;
@@ -282,10 +278,7 @@ struct smbchg_chip {
 	bool				skip_usb_notification;
 	u32				vchg_adc_channel;
 	struct qpnp_vadc_chip		*vchg_vadc_dev;
-<<<<<<< HEAD
-=======
 	struct qpnp_vadc_chip		*vusb_vadc_dev;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 
 	/* voters */
 	struct votable			*fcc_votable;
@@ -297,11 +290,7 @@ struct smbchg_chip {
 	struct votable			*hw_aicl_rerun_disable_votable;
 	struct votable			*hw_aicl_rerun_enable_indirect_votable;
 	struct votable			*aicl_deglitch_short_votable;
-<<<<<<< HEAD
-
-=======
 	struct votable			*hvdcp_enable_votable;
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	/* extcon for VBUS / ID notification to USB */
 	struct extcon_dev		*extcon;
 };
@@ -470,7 +459,6 @@ module_param_named(
 static int smbchg_default_hvdcp3_icl_ma = 3000;
 module_param_named(
 	default_hvdcp3_icl_ma, smbchg_default_hvdcp3_icl_ma,
-
 	int, 00600
 );
 
@@ -838,6 +826,7 @@ static char *usb_type_str[] = {
 static int get_type(u8 type_reg)
 {
 	unsigned long type = type_reg;
+
 	type >>= TYPE_BITS_OFFSET;
 	return find_first_bit(&type, N_TYPE_BITS);
 }
@@ -4658,7 +4647,6 @@ static void restore_from_hvdcp_detection(struct smbchg_chip *chip)
 {
 	int rc;
 
-
 	/* switch to 9V HVDCP */
 	rc = smbchg_sec_masked_write(chip, chip->usb_chgpth_base + CHGPTH_CFG,
 				HVDCP_ADAPTER_SEL_MASK, HVDCP_9V);
@@ -5686,7 +5674,6 @@ static int smbchg_dp_dm(struct smbchg_chip *chip, int val)
 	case POWER_SUPPLY_DP_DM_DP_PULSE:
 		if (chip->schg_version == QPNP_SCHG)
 			rc = set_dpdm_psy(chip, POWER_SUPPLY_DP_DM_DP_PULSE);
-
 		else
 			rc = smbchg_dp_pulse_lite(chip);
 		if (!rc)
@@ -5742,6 +5729,7 @@ static void update_typec_otg_status(struct smbchg_chip *chip, int mode,
 					bool force)
 {
 	union power_supply_propval pval = {0, };
+
 	pr_smb(PR_TYPEC, "typec mode = %d\n", mode);
 
 	if (mode == POWER_SUPPLY_TYPE_DFP) {
@@ -6881,6 +6869,7 @@ static const char * const bpd_label[] = {
 static inline int get_bpd(const char *name)
 {
 	int i = 0;
+
 	for (i = 0; i < ARRAY_SIZE(bpd_label); i++) {
 		if (strcmp(bpd_label[i], name) == 0)
 			return i;
@@ -7415,11 +7404,7 @@ static int smbchg_hw_init(struct smbchg_chip *chip)
 	return rc;
 }
 
-<<<<<<< HEAD
-static struct of_device_id smbchg_match_table[] = {
-=======
 static const struct of_device_id smbchg_match_table[] = {
->>>>>>> ce6f0cd0ebb9672786d6e3a50a10117e9b709d3e
 	{
 		.compatible     = "qcom,qpnp-smbcharger",
 	},
@@ -7889,7 +7874,6 @@ static int smbchg_request_irqs(struct smbchg_chip *chip)
 				return rc;
 			rc = smbchg_request_irq(chip, child,
 				&chip->usbin_ov_irq,
-
 				"usbin-ov", usbin_ov_handler, flags);
 			if (rc < 0)
 				return rc;

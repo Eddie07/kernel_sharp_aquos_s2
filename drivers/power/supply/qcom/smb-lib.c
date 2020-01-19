@@ -39,6 +39,9 @@
 			pr_debug("%s: %s: " fmt, chg->name,	\
 				__func__, ##__VA_ARGS__);	\
 	} while (0)
+extern int typec;
+
+
 static bool is_secure(struct smb_charger *chg, int addr)
 {
 	if (addr == SHIP_MODE_REG || addr == FREQ_CLK_DIV_REG)
@@ -55,7 +58,6 @@ int smblib_read(struct smb_charger *chg, u16 addr, u8 *val)
 	rc = regmap_read(chg->regmap, addr, &temp);
 	if (rc >= 0)
 		*val = (u8)temp;
-
 
 	return rc;
 }
@@ -81,7 +83,7 @@ int smblib_masked_write(struct smb_charger *chg, u16 addr, u8 mask, u8 val)
 
 unlock:
 	mutex_unlock(&chg->write_lock);
-return rc;
+	return rc;
 }
 
 int smblib_write(struct smb_charger *chg, u16 addr, u8 val)
@@ -1605,7 +1607,8 @@ int smblib_get_prop_batt_status(struct smb_charger *chg,
 	}
 	stat = stat & BATTERY_CHARGER_STATUS_MASK;
 
-	if (!usb_online && !dc_online) {
+	if ((!usb_online && !dc_online)||(!typec)) {
+	pr_err("forecast_charging disable, return charging status \n");
 		switch (stat) {
 		case TERMINATE_CHARGE:
 		case INHIBIT_CHARGE:
@@ -1618,7 +1621,14 @@ int smblib_get_prop_batt_status(struct smb_charger *chg,
 		return rc;
 	}
 
-	switch (stat) {
+	// porting from A1N
+	if (typec) {
+		val->intval = POWER_SUPPLY_STATUS_CHARGING;
+		pr_err("forecast_charging enable, return charging status \n");
+		return rc;
+	}
+	
+switch (stat) {
 	case TRICKLE_CHARGE:
 	case PRE_CHARGE:
 	case FAST_CHARGE:
@@ -1715,7 +1725,6 @@ int smblib_get_prop_batt_health(struct smb_charger *chg,
 	}
 	smblib_dbg(chg, PR_REGISTER, "BATTERY_CHARGER_STATUS_2 = 0x%02x\n",
 		   stat);
-
 
 	if (stat & CHARGER_ERROR_STATUS_BAT_OV_BIT) {
 		rc = smblib_get_prop_from_bms(chg,
@@ -3064,7 +3073,6 @@ int smblib_get_charge_current(struct smb_charger *chg,
 	/* QC 2.0/3.0 adapter */
 	if (apsd_result->bit & (QC_3P0_BIT | QC_2P0_BIT)) {
 		*total_current_ua = HVDCP_CURRENT_UA;
-
 		return 0;
 	}
 
@@ -3262,6 +3270,7 @@ static void smblib_micro_usb_plugin(struct smb_charger *chg, bool vbus_rising)
 		smblib_uusb_removal(chg);
 	}
 }
+
 void smblib_usb_plugin_hard_reset_locked(struct smb_charger *chg)
 {
 	int rc;
@@ -3360,7 +3369,6 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 	power_supply_changed(chg->usb_psy);
 	smblib_dbg(chg, PR_INTERRUPT, "IRQ: usbin-plugin %s\n",
 					vbus_rising ? "attached" : "detached");
-
 }
 
 irqreturn_t smblib_handle_usb_plugin(int irq, void *data)

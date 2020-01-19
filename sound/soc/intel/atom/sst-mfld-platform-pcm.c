@@ -398,7 +398,17 @@ static int sst_media_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
+=======
+	int ret;
+
+	ret =
+		snd_pcm_lib_malloc_pages(substream,
+				params_buffer_bytes(params));
+	if (ret)
+		return ret;
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	memset(substream->runtime->dma_area, 0, params_buffer_bytes(params));
 	return 0;
 }

@@ -49,7 +49,12 @@ static const struct lbs_fw_table fw_table[] = {
 	{ MODEL_8388, "libertas/usb8388_v5.bin", NULL },
 	{ MODEL_8388, "libertas/usb8388.bin", NULL },
 	{ MODEL_8388, "usb8388.bin", NULL },
+<<<<<<< HEAD
 	{ MODEL_8682, "libertas/usb8682.bin", NULL }
+=======
+	{ MODEL_8682, "libertas/usb8682.bin", NULL },
+	{ 0, NULL, NULL }
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 };
 
 static struct usb_device_id if_usb_table[] = {

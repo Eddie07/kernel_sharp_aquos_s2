@@ -555,11 +555,8 @@ static void msm_isp_cfg_framedrop_reg(
 	if (!runtime_init_frame_drop)
 		framedrop_period = stream_info->current_framedrop_period;
 
-	if (MSM_VFE_STREAM_STOP_PERIOD != framedrop_period) {
+	if (MSM_VFE_STREAM_STOP_PERIOD != framedrop_period)
 		framedrop_pattern = 0x1;
-		if (framedrop_period > 1)
-		framedrop_pattern = framedrop_pattern << (framedrop_period-1);
-	}
 
 	BUG_ON(0 == framedrop_period);
 	for (i = 0; i < stream_info->num_isp; i++) {
@@ -3604,10 +3601,14 @@ static int msm_isp_request_frame(struct vfe_device *vfe_dev,
 		vfe_ops.axi_ops.get_pingpong_status(vfe_dev);
 
 	/* As MCT is still processing it, need to drop the additional requests*/
-	if (vfe_dev->isp_page->drop_reconfig) {
+	if (vfe_dev->isp_page->drop_reconfig)  {
 		pr_err("%s: MCT has not yet delayed %d drop request %d\n",
 			__func__, vfe_dev->isp_page->drop_reconfig, frame_id);
-		goto error;
+		//	vfe_dev->isp_page->drop_reconfig = 1;
+	//	if (frame_id > 10 ) {
+	//	 msm_isp_halt_send_error(vfe_dev, ISP_EVENT_BUF_FATAL_ERROR);
+	//	 return -EINVAL; } else {
+	//	goto error; }
 	}
 
 	/*

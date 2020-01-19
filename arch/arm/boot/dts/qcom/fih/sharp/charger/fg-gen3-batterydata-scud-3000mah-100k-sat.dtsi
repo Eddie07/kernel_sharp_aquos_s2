@@ -1,10 +1,10 @@
 qcom,sat_scud_3000mah_100k_4350mv {
-			qcom, = <0x18>;
+			qcom, = <24>;
 			qcom,max-voltage-uv = <0x426030>;
 			qcom,fg-cc-cv-threshold-mv = <0x10f4>;
 			qcom,nom-batt-capacity-mah = <0xb90>;
 			qcom,fastchg-current-ma = <0x834>;
-			qcom,batt-id-kohm = <0x64>;
+			qcom,batt-id-kohm = <100>;
 			qcom,battery-beta = <0xd6b>;
 			qcom,battery-type = "sat_scud_3000mah_100k_4350mv";
 			qcom,checksum = <0x8f2>;

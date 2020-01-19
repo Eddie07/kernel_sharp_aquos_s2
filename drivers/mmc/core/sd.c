@@ -1496,6 +1496,7 @@ int mmc_attach_sd(struct mmc_host *host)
 	 * these bits as being in-valid and especially also bit7.
 	 */
 	ocr &= ~0x7FFF;
+
 	rocr = mmc_select_voltage(host, ocr);
 
 	/*

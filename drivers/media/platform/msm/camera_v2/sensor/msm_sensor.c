@@ -155,7 +155,6 @@ int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 	struct msm_camera_slave_info *slave_info;
 	const char *sensor_name;
 	uint32_t retry = 0;
-pr_err("Power up1");
 
 	if (!s_ctrl) {
 		pr_err("%s:%d failed: %pK\n",
@@ -205,8 +204,6 @@ pr_err("Power up1");
 		}
 		rc = msm_camera_power_up(power_info, s_ctrl->sensor_device_type,
 			sensor_i2c_client);
-
-            pr_err("Power up");
 		if (rc < 0)
 			return rc;
 		rc = msm_sensor_check_id(s_ctrl);
@@ -320,79 +317,7 @@ static void msm_sensor_stop_stream(struct msm_sensor_ctrl_t *s_ctrl)
 	mutex_unlock(s_ctrl->msm_sensor_mutex);
 	return;
 }
-static void fih_msm_sensor_restart_stream(struct msm_sensor_ctrl_t *s_ctrl)
-{
-	int rc=0;
-	const char *sensor_name;
-	struct msm_camera_i2c_reg_setting conf_array;
-	struct msm_camera_i2c_reg_array *sensor_setting=NULL;
-	int size=0;
-	uint32_t addrX=0;
-	uint32_t addrY=0;
-	uint16_t outputX=4032;
-	uint16_t outputY=3024;
 
-	mutex_lock(s_ctrl->msm_sensor_mutex);
-	if (s_ctrl->sensor_state == MSM_SENSOR_POWER_UP)
-	{
-		sensor_name=s_ctrl->sensordata->sensor_name;
-
-		//get resolution
-		rc=fih_get_sensor_i2c_output_addr(sensor_name, &addrX, &addrY);
-		pr_err("%s: %s: addrX:0x%x, addrY:0x%x", __func__, sensor_name, addrX, addrY);
-		if (rc < 0) {
-			pr_err("%s: %s: get i2c addr failed\n", __func__, sensor_name);
-			goto END;
-		}
-
-		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(
-			s_ctrl->sensor_i2c_client, addrX, &outputX, MSM_CAMERA_I2C_WORD_DATA);
-		if (rc < 0) {
-			pr_err("%s: %s: read 0x%x failed\n", __func__, sensor_name, addrX);
-			//goto END;
-		}
-		rc = s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_read(
-			s_ctrl->sensor_i2c_client, addrY, &outputY, MSM_CAMERA_I2C_WORD_DATA);
-		if (rc < 0) {
-			pr_err("%s: %s: read 0x%x failed\n", __func__, sensor_name, addrY);
-			//goto END;
-		}
-		pr_err("%s: %d x %d\n", __func__, outputX, outputY);
-
-		rc = fih_get_recover_sensor_setting(sensor_name, outputX, outputY, &sensor_setting, &size);
-		if(rc < 0){
-			goto END;
-		}
-		pr_err("%s: setting size %d\n", __func__, size);
-
-		pr_err("%s:%d sensor name:%s recover start\n",__func__,__LINE__,sensor_name);
-		//power down/power up
-		rc = s_ctrl->func_tbl->sensor_power_down(s_ctrl);
-		if (rc < 0) {
-			pr_err("%s:%d failed rc %d\n", __func__,__LINE__, rc);
-			goto END;
-		}
-		rc = s_ctrl->func_tbl->sensor_power_up(s_ctrl);
-		if (rc < 0) {
-			pr_err("%s:%d failed rc %d\n", __func__,__LINE__, rc);
-			goto END;
-		}
-
-		//new sensor setting
-		conf_array.addr_type = s_ctrl->stop_setting.addr_type;
-		conf_array.data_type = s_ctrl->stop_setting.data_type;
-		conf_array.delay = s_ctrl->stop_setting.delay;
-		conf_array.size = size;
-		conf_array.reg_setting = sensor_setting;
-
-		//reset sensor setting
-		s_ctrl->sensor_i2c_client->i2c_func_tbl->i2c_write_table(s_ctrl->sensor_i2c_client, &conf_array);
-		pr_err("%s:%d sensor recover done\n",__func__,__LINE__);
-	}
-END:
-	mutex_unlock(s_ctrl->msm_sensor_mutex);
-	return;
-}
 static int msm_sensor_get_af_status(struct msm_sensor_ctrl_t *s_ctrl,
 			void __user *argp)
 {
@@ -428,7 +353,6 @@ static long msm_sensor_subdev_ioctl(struct v4l2_subdev *sd,
 		msm_sensor_stop_stream(s_ctrl);
 		return 0;
 	case MSM_SD_NOTIFY_FREEZE:
-		fih_msm_sensor_restart_stream(s_ctrl);//add
 		return 0;
 	case MSM_SD_UNNOTIFY_FREEZE:
 		return 0;
@@ -624,8 +548,11 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		if (s_ctrl->sensor_i2c_client->cci_client) {
 			orig_slave_addr =
 				s_ctrl->sensor_i2c_client->cci_client->sid;
-			s_ctrl->sensor_i2c_client->cci_client->sid =
-				read_slave_addr >> 1;
+			if (read_slave_addr>0)
+			{
+				s_ctrl->sensor_i2c_client->cci_client->sid =
+					read_slave_addr >> 1;
+			}
 		} else if (s_ctrl->sensor_i2c_client->client) {
 			orig_slave_addr =
 				s_ctrl->sensor_i2c_client->client->addr;
@@ -1146,8 +1073,11 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 		if (s_ctrl->sensor_i2c_client->cci_client) {
 			orig_slave_addr =
 				s_ctrl->sensor_i2c_client->cci_client->sid;
-			s_ctrl->sensor_i2c_client->cci_client->sid =
-				read_slave_addr >> 1;
+			if (read_slave_addr>0)
+			{
+				s_ctrl->sensor_i2c_client->cci_client->sid =
+					read_slave_addr >> 1;
+			}
 		} else if (s_ctrl->sensor_i2c_client->client) {
 			orig_slave_addr =
 				s_ctrl->sensor_i2c_client->client->addr;

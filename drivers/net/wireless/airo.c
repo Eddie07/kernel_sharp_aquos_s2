@@ -5484,7 +5484,11 @@ static int proc_BSSList_open( struct inode *inode, struct file *file ) {
            we have to add a spin lock... */
 	rc = readBSSListRid(ai, doLoseSync, &BSSList_rid);
 	while(rc == 0 && BSSList_rid.index != cpu_to_le16(0xffff)) {
+<<<<<<< HEAD
 		ptr += sprintf(ptr, "%pM %*s rssi = %d",
+=======
+		ptr += sprintf(ptr, "%pM %.*s rssi = %d",
+>>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 			       BSSList_rid.bssid,
 				(int)BSSList_rid.ssidLen,
 				BSSList_rid.ssid,

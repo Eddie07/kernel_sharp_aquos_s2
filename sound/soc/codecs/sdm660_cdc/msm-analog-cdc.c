@@ -1,4 +1,5 @@
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+
+/* Copyright (c) 2015-2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -73,9 +74,6 @@
 
 #define VOLTAGE_CONVERTER(value, min_value, step_size)\
 	((value - min_value)/step_size)
-
-#define BBOX_WCD_SPMI_PROBE_FAILED do {printk("BBox::UEC;2::1\n");} while(0);
-#define BBOX_WCD_REGISTER_ADSP_NOTIFIER_FAILED do {printk("BBox::UEC;2::2\n");} while(0);
 
 enum {
 	BOOST_SWITCH = 0,
@@ -861,7 +859,7 @@ exit:
 	msm_anlg_cdc_compute_impedance(codec, impedance_l, impedance_r,
 				      zl, zr, high);
 
-	pr_info("%s: RL %d ohm, RR %d ohm\n", __func__, *zl, *zr);
+	dev_dbg(codec->dev, "%s: RL %d ohm, RR %d ohm\n", __func__, *zl, *zr);
 	dev_dbg(codec->dev, "%s: Impedance detection completed\n", __func__);
 }
 
@@ -1415,7 +1413,6 @@ static int msm_anlg_cdc_codec_enable_on_demand_supply(
 			}
 			ret = regulator_set_load(supply->supply,
 						 supply->optimum_ua);
-			dev_err(codec->dev, "%s: regulator_set_load(%d)\n",__func__, supply->optimum_ua);
 			if (ret < 0) {
 				dev_err(codec->dev,
 					"Setting regulator optimum mode(en) failed for micbias with err = %d\n",
@@ -2205,8 +2202,10 @@ static int msm_anlg_cdc_codec_enable_adc(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		msm_anlg_cdc_codec_enable_adc_block(codec, 1);
+
 		//rita change for tas CFILT connect setting wrong at 20181207
 		if ((w->reg == MSM89XX_PMIC_ANALOG_TX_2_EN) && (strstr(saved_command_line, "androidboot.device=TAS") == NULL))
+
 			snd_soc_update_bits(codec,
 			MSM89XX_PMIC_ANALOG_MICB_1_CTL, 0x02, 0x02);
 		/*
@@ -3426,8 +3425,8 @@ static const struct snd_soc_dapm_widget msm_anlg_cdc_dapm_widgets[] = {
 		msm_anlg_cdc_hph_pa_event, SND_SOC_DAPM_PRE_PMU |
 		SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD |
 		SND_SOC_DAPM_POST_PMD),
-	SND_SOC_DAPM_PGA_E("SPK PA", SND_SOC_NOPM,
-			0, 0, NULL, 0, msm_anlg_cdc_codec_enable_spk_pa,
+	SND_SOC_DAPM_PGA_E("SPK PA", MSM89XX_PMIC_ANALOG_SPKR_DRV_CTL,
+			7, 0, NULL, 0, msm_anlg_cdc_codec_enable_spk_pa,
 			SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
 			SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD),
 	SND_SOC_DAPM_PGA_E("LINEOUT PA", MSM89XX_PMIC_ANALOG_RX_LO_EN_CTL,
@@ -4098,8 +4097,7 @@ int msm_anlg_codec_info_create_codec_entry(struct snd_info_entry *codec_root,
 	if (ret < 0) {
 		pr_err("%s: Audio notifier register failed ret = %d\n",
 			__func__, ret);
-		printk("BBox;Failed to register adsp state notifier\n");
-		BBOX_WCD_REGISTER_ADSP_NOTIFIER_FAILED;
+
 		return ret;
 	}
 	return 0;
@@ -4582,7 +4580,8 @@ static int msm_anlg_cdc_probe(struct platform_device *pdev)
 	int adsp_state;
 
 	adsp_state = apr_get_subsys_state();
-	if (adsp_state != APR_SUBSYS_LOADED) {
+	if (adsp_state != APR_SUBSYS_LOADED ||
+		!q6core_is_adsp_ready()) {
 		dev_err(&pdev->dev, "Adsp is not loaded yet %d\n",
 			adsp_state);
 		return -EPROBE_DEFER;
@@ -4647,8 +4646,6 @@ static int msm_anlg_cdc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev,
 			"%s:snd_soc_register_codec failed with error %d\n",
 			__func__, ret);
-		printk("BBox;snd_soc_register_codec failed\n");
-		BBOX_WCD_SPMI_PROBE_FAILED;
 		goto err_supplies;
 	}
 	BLOCKING_INIT_NOTIFIER_HEAD(&sdm660_cdc->notifier);

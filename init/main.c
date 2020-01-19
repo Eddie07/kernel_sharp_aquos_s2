@@ -513,7 +513,7 @@ asmlinkage __visible void __init start_kernel(void)
 //keymaster hack date only for supporting device, SAT uses depreciated version
 //ADD REPLACE SKUID
 char *keymaster_fake[2] = {"HH1", "HH6"};
-  char *keymaster_fake_patch=" androidboot.fakekeymaster=2019-11-05";
+  char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-01-01";
  
 //ADD VERITY KEY FOR USAGE WITH STOCK ROMS
 char *word3[12] = {"SS2", "SAT", "C10", "HH1", "SG1", "SD1", "HH6", "B2N", "C1N", "CTL", "DRG", "PL2"};

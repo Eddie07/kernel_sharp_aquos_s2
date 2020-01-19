@@ -1496,6 +1496,7 @@ static int fg_check_iacs_ready(struct fg_chip *chip)
 		} else {
 			if (!(--timeout) || rc)
 				break;
+
 			/* delay for iacs_ready to be asserted */
 			usleep_range(5000, 7000);
 		}
@@ -1556,6 +1557,7 @@ static int __fg_interleaved_mem_write(struct fg_chip *chip, u8 *val,
 		 */
 		if (!(byte_enable & BIT(3))) {
 			u8 dummy_byte = 0x0;
+
 			rc = fg_write(chip, &dummy_byte,
 				MEM_INTF_WR_DATA0(chip) + 3, 1);
 			if (rc) {
@@ -1730,6 +1732,7 @@ static int fg_interleaved_mem_read(struct fg_chip *chip, u8 *val, u16 address,
 
 	if (chip->fg_shutdown)
 		return -EINVAL;
+
 	if (offset > 3) {
 		pr_err("offset too large %d\n", offset);
 		return -EINVAL;
@@ -2716,6 +2719,7 @@ wait:
 		tried_again = true;
 		goto wait;
 	} else if (ret <= 0) {
+		pr_err("transaction timed out ret=%d\n", ret);
 		if (fg_is_batt_id_valid(chip))
 			resched_ms = fg_sram_update_period_ms;
 		else
@@ -3561,6 +3565,7 @@ static int fg_cap_learning_process_full_data(struct fg_chip *chip)
 		fg_cap_learning_stop(chip);
 		goto fail;
 	}
+
 	rc = fg_get_cc_soc(chip, &cc_pc_val);
 	if (rc) {
 		pr_err("failed to get CC_SOC, stopping capacity learning\n");
@@ -3576,6 +3581,7 @@ static int fg_cap_learning_process_full_data(struct fg_chip *chip)
 			100);
 	chip->learning_data.cc_uah = delta_cc_uah + chip->learning_data.cc_uah;
 
+	if (fg_debug_mask & FG_AGING)
 		pr_info("current cc_soc=%d cc_soc_pc=%d init_cc_pc_val=%d delta_cc_uah=%lld learned_cc_uah=%lld total_cc_uah = %lld\n",
 				cc_pc_val, cc_soc_delta_pc,
 				chip->learning_data.init_cc_pc_val,
@@ -3914,6 +3920,7 @@ fail:
 static bool is_usb_present(struct fg_chip *chip)
 {
 	union power_supply_propval prop = {0,};
+
 	if (!chip->usb_psy)
 		chip->usb_psy = power_supply_get_by_name("usb");
 
@@ -3926,6 +3933,7 @@ static bool is_usb_present(struct fg_chip *chip)
 static bool is_dc_present(struct fg_chip *chip)
 {
 	union power_supply_propval prop = {0,};
+
 	if (!chip->dc_psy)
 		chip->dc_psy = power_supply_get_by_name("dc");
 
@@ -6330,7 +6338,7 @@ wait:
 
 	batt_id = get_sram_prop_now(chip, FG_DATA_BATT_ID);
 	batt_id /= 1000;
-	if (fg_debug_mask & FG_STATUS)
+
 		pr_info("battery id = %dKOhms\n", batt_id);
 
 	profile_node = of_batterydata_get_best_profile(batt_node, batt_id,
@@ -6476,6 +6484,7 @@ wait:
 				DUMP_PREFIX_NONE, 16, 1,
 				chip->batt_profile, len, false);
 	}
+
 	memcpy(chip->batt_profile, data, len);
 	chip->batt_profile_len = len;
 
@@ -6576,7 +6585,6 @@ no_profile:
 		power_supply_changed(chip->bms_psy);
 	fg_relax(&chip->profile_wakeup_source);
 	return rc;
-
 update:
 	cancel_delayed_work(&chip->update_sram_data);
 	schedule_delayed_work(
@@ -8522,7 +8530,6 @@ static int fg_memif_init(struct fg_chip *chip)
 		break;
 	default:
 		pr_err("Digital Major rev=%d not supported\n",
-
 					chip->revision[DIG_MAJOR]);
 		return -EINVAL;
 	}
@@ -8818,7 +8825,6 @@ static int fg_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-
 	rc = fg_memif_init(chip);
 	if (rc) {
 		pr_err("Unable to setup mem_if offsets rc=%d\n", rc);
@@ -8890,7 +8896,6 @@ static int fg_probe(struct platform_device *pdev)
 		rc = fg_dfs_create(chip);
 		if (rc < 0) {
 			pr_err("failed to create debugfs rc = %d\n", rc);
-
 			goto power_supply_unregister;
 		}
 	}
@@ -9033,6 +9038,7 @@ static void fg_shutdown(struct platform_device *pdev)
 	if (fg_debug_mask & FG_STATUS)
 		pr_emerg("FG shutdown complete\n");
 }
+
 static const struct dev_pm_ops qpnp_fg_pm_ops = {
 	.suspend	= fg_suspend,
 	.resume		= fg_resume,

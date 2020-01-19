@@ -50,7 +50,7 @@
 #define CSID_VERSION_V50                      0x50000000
 #define MSM_CSID_DRV_NAME                    "msm_csid"
 
-#define DBG_CSID                             0
+#define DBG_CSID                             1
 #define SHORT_PKT_CAPTURE                    0
 #define SHORT_PKT_OFFSET                     0x200
 #define ENABLE_3P_BIT                        1
@@ -61,7 +61,7 @@
 #define FALSE  0
 
 #define MAX_LANE_COUNT 4
-#define CSID_TIMEOUT msecs_to_jiffies(800)
+#define CSID_TIMEOUT msecs_to_jiffies(100)
 
 #undef CDBG
 #define CDBG(fmt, args...) pr_debug(fmt, ##args)
