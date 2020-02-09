@@ -862,10 +862,7 @@ struct ath10k {
 
 	struct completion install_key_done;
 
-<<<<<<< HEAD
-=======
 	int last_wmi_vdev_start_status;
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	struct completion vdev_setup_done;
 	struct completion vdev_delete_done;
 

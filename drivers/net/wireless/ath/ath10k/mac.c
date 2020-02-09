@@ -958,11 +958,7 @@ static inline int ath10k_vdev_setup_sync(struct ath10k *ar)
 	if (time_left == 0)
 		return -ETIMEDOUT;
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return ar->last_wmi_vdev_start_status;
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 }
 
 static int ath10k_monitor_vdev_start(struct ath10k *ar, int vdev_id)

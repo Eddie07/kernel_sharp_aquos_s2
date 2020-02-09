@@ -39,7 +39,7 @@
 			pr_debug("%s: %s: " fmt, chg->name,	\
 				__func__, ##__VA_ARGS__);	\
 	} while (0)
-extern int typec;
+// extern int typec;
 
 
 static bool is_secure(struct smb_charger *chg, int addr)
@@ -1607,8 +1607,7 @@ int smblib_get_prop_batt_status(struct smb_charger *chg,
 	}
 	stat = stat & BATTERY_CHARGER_STATUS_MASK;
 
-	if ((!usb_online && !dc_online)||(!typec)) {
-	pr_err("forecast_charging disable, return charging status \n");
+	if (!usb_online && !dc_online) {
 		switch (stat) {
 		case TERMINATE_CHARGE:
 		case INHIBIT_CHARGE:
@@ -1621,14 +1620,7 @@ int smblib_get_prop_batt_status(struct smb_charger *chg,
 		return rc;
 	}
 
-	// porting from A1N
-	if (typec) {
-		val->intval = POWER_SUPPLY_STATUS_CHARGING;
-		pr_err("forecast_charging enable, return charging status \n");
-		return rc;
-	}
-	
-switch (stat) {
+	switch (stat) {
 	case TRICKLE_CHARGE:
 	case PRE_CHARGE:
 	case FAST_CHARGE:

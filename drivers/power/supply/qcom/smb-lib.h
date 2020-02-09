@@ -526,6 +526,7 @@ int smblib_get_prop_from_bms(struct smb_charger *chg,
 				union power_supply_propval *val);
 int smblib_set_prop_pr_swap_in_progress(struct smb_charger *chg,
 				const union power_supply_propval *val);
+
 void smblib_usb_typec_change(struct smb_charger *chg);
 
 int smblib_init(struct smb_charger *chg);

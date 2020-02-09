@@ -617,10 +617,7 @@ static int gs_can_open(struct net_device *netdev)
 					   rc);
 
 				usb_unanchor_urb(urb);
-<<<<<<< HEAD
-=======
 				usb_free_urb(urb);
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 				break;
 			}
 

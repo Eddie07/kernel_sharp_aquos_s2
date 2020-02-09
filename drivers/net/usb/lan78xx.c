@@ -2246,14 +2246,11 @@ static int lan78xx_bind(struct lan78xx_net *dev, struct usb_interface *intf)
 	int i;
 
 	ret = lan78xx_get_endpoints(dev, intf);
-<<<<<<< HEAD
-=======
 	if (ret) {
 		netdev_warn(dev->net, "lan78xx_get_endpoints failed: %d\n",
 			    ret);
 		return ret;
 	}
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 
 	dev->data[0] = (unsigned long)kzalloc(sizeof(*pdata), GFP_KERNEL);
 

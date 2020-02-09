@@ -108,11 +108,7 @@ struct pcan_usb_msg_context {
 	u8 *end;
 	u8 rec_cnt;
 	u8 rec_idx;
-<<<<<<< HEAD
-	u8 rec_data_idx;
-=======
 	u8 rec_ts_idx;
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	struct net_device *netdev;
 	struct pcan_usb *pdev;
 };
@@ -556,12 +552,6 @@ static int pcan_usb_decode_status(struct pcan_usb_msg_context *mc,
 	mc->ptr += PCAN_USB_CMD_ARGS;
 
 	if (status_len & PCAN_USB_STATUSLEN_TIMESTAMP) {
-<<<<<<< HEAD
-		int err = pcan_usb_decode_ts(mc, !mc->rec_idx);
-
-		if (err)
-			return err;
-=======
 		int err = pcan_usb_decode_ts(mc, !mc->rec_ts_idx);
 
 		if (err)
@@ -571,7 +561,6 @@ static int pcan_usb_decode_status(struct pcan_usb_msg_context *mc,
 		 * byte
 		 */
 		mc->rec_ts_idx++;
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	}
 
 	switch (f) {
@@ -654,12 +643,6 @@ static int pcan_usb_decode_data(struct pcan_usb_msg_context *mc, u8 status_len)
 
 	cf->can_dlc = get_can_dlc(rec_len);
 
-<<<<<<< HEAD
-	/* first data packet timestamp is a word */
-	if (pcan_usb_decode_ts(mc, !mc->rec_data_idx))
-		goto decode_failed;
-
-=======
 	/* Only first packet timestamp is a word */
 	if (pcan_usb_decode_ts(mc, !mc->rec_ts_idx))
 		goto decode_failed;
@@ -667,7 +650,6 @@ static int pcan_usb_decode_data(struct pcan_usb_msg_context *mc, u8 status_len)
 	/* Next packet in the buffer will have a timestamp on a single byte */
 	mc->rec_ts_idx++;
 
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 	/* read data */
 	memset(cf->data, 0x0, sizeof(cf->data));
 	if (status_len & PCAN_USB_STATUSLEN_RTR) {
@@ -721,10 +703,6 @@ static int pcan_usb_decode_msg(struct peak_usb_device *dev, u8 *ibuf, u32 lbuf)
 		/* handle normal can frames here */
 		} else {
 			err = pcan_usb_decode_data(&mc, sl);
-<<<<<<< HEAD
-			mc.rec_data_idx++;
-=======
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
 		}
 	}
 
