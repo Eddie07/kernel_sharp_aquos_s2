@@ -538,11 +538,11 @@ static void wakeup_source_activate(struct wakeup_source *ws)
 			"unregistered wakeup source\n"))
 		return;
 
-       // fix to wakelock
-	if (!strcmp(ws->name, "sensor_ind")) {
-		pr_info("FIX: wakeup source sensor_ind activate skipped\n");
-		return;
-	}
+       /* Wakelocks to ignore */
+//	if (!strcmp(ws->name, "sensor_ind")) {
+//		pr_info("FIX: wakeup source skipped %s\n", ws->name);
+//		return;
+//	}
 
 
 	/*
