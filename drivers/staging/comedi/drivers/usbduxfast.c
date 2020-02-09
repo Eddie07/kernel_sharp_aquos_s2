@@ -31,10 +31,7 @@
  *
  *
  * Revision history:
-<<<<<<< HEAD
-=======
  * 1.0: Fixed a rounding error in usbduxfast_ai_cmdtest
->>>>>>> 1c79c165ac7f8a08670e74ba34699d22ea203347
  * 0.9: Dropping the first data packet which seems to be from the last transfer.
  *      Buffer overflows in the FX2 are handed over to comedi.
  * 0.92: Dropping now 4 packets. The quad buffer has to be emptied.
@@ -423,6 +420,7 @@ static int usbduxfast_ai_cmdtest(struct comedi_device *dev,
 		arg = (steps * 1000) / 30;
 		err |= comedi_check_trigger_arg_is(&cmd->convert_arg, arg);
 	}
+
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
 	else	/* TRIG_NONE */

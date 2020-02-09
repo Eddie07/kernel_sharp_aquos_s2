@@ -25,15 +25,6 @@ ifndef CONFIG_ROME_IF
 endif
 endif
 
-#Enable WLAN/Power debugfs feature only if debug_fs is enabled
-ifeq ($(CONFIG_DEBUG_FS), y)
-	# Flag to enable debugfs. Depends on CONFIG_DEBUG_FS in kernel
-	# configuration.
-	CONFIG_WLAN_DEBUGFS := y
-
-	CONFIG_WLAN_POWER_DEBUGFS := y
-endif
-
 ifeq ($(KERNEL_BUILD),1)
 	# These are provided in external module based builds
 	# Need to explicitly define for Kernel-based builds
@@ -125,6 +116,8 @@ ifeq ($(KERNEL_BUILD), 0)
 
 	ifeq ($(CONFIG_ARCH_SDM660), y)
 	CONFIG_QCACLD_FEATURE_METERING := y
+	#Flag to enable FIPS
+	CONFIG_WLAN_FEATURE_FIPS := y
 	endif
 
 	ifeq ($(CONFIG_ARCH_SDM630), y)
@@ -192,6 +185,9 @@ ifeq ($(KERNEL_BUILD), 0)
 
 	#Flag to enable offload packets feature
 	CONFIG_WLAN_OFFLOAD_PACKETS := y
+
+	#Flag to enable packet capture mode
+	CONFIG_WLAN_FEATURE_PKT_CAPTURE := y
 
 	#enable TSF get feature
 	CONFIG_WLAN_SYNC_TSF := y
@@ -276,6 +272,15 @@ CONFIG_WLAN_SPECTRAL_SCAN := y
 # Flag to enable Android Packet Filtering
 CONFIG_WLAN_FEATURE_APF := y
 
+#Enable WLAN/Power debugfs feature only if debug_fs is enabled
+ifeq ($(CONFIG_DEBUG_FS), y)
+       # Flag to enable debugfs. Depends on CONFIG_DEBUG_FS in kernel
+       # configuration.
+       CONFIG_WLAN_DEBUGFS := y
+
+       CONFIG_WLAN_POWER_DEBUGFS := y
+endif
+
 # If not set, assume, Common driver is with in the build tree
 WLAN_COMMON_ROOT ?= ../qca-wifi-host-cmn
 WLAN_COMMON_INC ?= $(WLAN_ROOT)/$(WLAN_COMMON_ROOT)
@@ -291,16 +296,28 @@ ifneq ($(CONFIG_MOBILE_ROUTER), y)
 CONFIG_QCOM_ESE := y
 endif
 
+#Enable beacon reporting feature
+CONFIG_WLAN_BEACON_REPORTING := y
+
+#Enable/Disable FW thermal mitigation feature
+CONFIG_WLAN_FW_THERMAL_MITIGATION := n
+
 # Feature flags which are not (currently) configurable via Kconfig
 
 #Whether to build debug version
-BUILD_DEBUG_VERSION := 0
+BUILD_DEBUG_VERSION := 1
 
 #Enable this flag to build driver in diag version
 BUILD_DIAG_VERSION := 1
 
 #Do we panic on bug?  default is to warn
-PANIC_ON_BUG := 0
+ifeq ($(CONFIG_SLUB_DEBUG), y)
+	PANIC_ON_BUG := 1
+else ifeq ($(CONFIG_PERF_DEBUG), y)
+	PANIC_ON_BUG := 1
+else
+	PANIC_ON_BUG := 0
+endif
 
 #Enable OL debug and wmi unified functions
 CONFIG_ATH_PERF_PWR_OFFLOAD := 1
@@ -1147,6 +1164,10 @@ ifeq ($(CONFIG_MPC_UT_FRAMEWORK),y)
 WMA_OBJS +=	$(WMA_SRC_DIR)/wma_utils_ut.o
 endif
 
+ifeq ($(CONFIG_WLAN_FW_THERMAL_MITIGATION), y)
+WMA_OBJS += $(WMA_SRC_DIR)/wma_thermal.o
+endif
+
 ############## PLD ##########
 PLD_DIR := core/pld
 PLD_INC_DIR := $(PLD_DIR)/inc
@@ -1299,12 +1320,20 @@ CDEFINES :=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DCONFIG_HDD_INIT_WITH_RTNL_LOCK \
 		-DMWS_COEX
 
+ifeq ($(CONFIG_WLAN_FEATURE_FIPS), y)
+CDEFINES += -DWLAN_FEATURE_FIPS
+endif
+
 ifneq ($(CONFIG_HIF_USB), 1)
 CDEFINES += -DWLAN_LOGGING_SOCK_SVC_ENABLE
 endif
 
 ifeq ($(CONFIG_WLAN_FEATURE_FILS),y)
 CDEFINES += -DWLAN_FEATURE_FILS_SK
+endif
+
+ifeq ($(CONFIG_WLAN_FEATURE_PKT_CAPTURE),y)
+CDEFINES += -DWLAN_FEATURE_PKT_CAPTURE
 endif
 
 ifeq ($(CONFIG_CNSS), y)
@@ -1447,6 +1476,14 @@ endif
 
 ifeq ($(CONFIG_WLAN_FEATURE_SAE),y)
 CDEFINES += -DWLAN_FEATURE_SAE
+endif
+
+ifeq ($(CONFIG_WLAN_BEACON_REPORTING),y)
+CDEFINES += -DNTH_BEACON_OFFLOAD
+endif
+
+ifeq ($(CONFIG_WLAN_FW_THERMAL_MITIGATION),y)
+CDEFINES += -DFW_THERMAL_THROTTLE_SUPPORT
 endif
 
 ifeq ($(BUILD_DIAG_VERSION),1)
@@ -1934,11 +1971,6 @@ EXTRA_CFLAGS += -Wmissing-prototypes
 ifeq ($(call cc-option-yn, -Wheader-guard),y)
 EXTRA_CFLAGS += -Wheader-guard
 endif
-
-# To build without debug just ignore not used code.
-EXTRA_CFLAGS += $(call cc-disable-warning,unused-variable,)
-EXTRA_CFLAGS += $(call cc-disable-warning,unused-function,)
-EXTRA_CFLAGS += $(call cc-disable-warning,unused-value,)
 
 # If the module name is not "wlan", then the define MULTI_IF_NAME to be the
 # same a the QCA CHIP name. The host driver will then append MULTI_IF_NAME to
