@@ -379,7 +379,7 @@ qcom,mdss-dsi-panel-blackness-level = <3230>;
 	qcom,platform-reset-gpio = <&tlmm 53 0>;
 	qcom,platform-te-gpio = <&tlmm 59 0>;
 	wqhd-vddio-supply = <&pm660l_l6>;
-         fih,LCM-IOVDD-ENABLE-gpio = <&tlmm 3 0>;
+    //     fih,LCM-IOVDD-ENABLE-gpio = <&tlmm 3 0>;
         fih,tp-reset-gpio = <&tlmm 66 0>;
 };
 
