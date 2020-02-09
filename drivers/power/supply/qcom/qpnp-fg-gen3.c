@@ -763,11 +763,21 @@ static int fg_get_msoc_raw(struct fg_chip *chip, int *val)
 #define FULL_SOC_RAW	255
 static int fg_get_msoc(struct fg_chip *chip, int *msoc)
 {
-	int rc;
+	int rc, cc_soc, val, val2, perc;
+
 
 	rc = fg_get_msoc_raw(chip, msoc);
+
 	if (rc < 0)
 		return rc;
+// charge counter 	
+	rc = fg_get_sram_prop(chip, FG_SRAM_CC_SOC_SW, &cc_soc);
+		if (rc < 0)
+		return rc;
+		val = div_s64(cc_soc * chip->cl.learned_cc_uah, CC_SOC_30BIT);
+		val2= chip->cl.learned_cc_uah;
+	perc = div64_s64(val*100, val2);
+	
 
 	/*
 	 * To have better endpoints for 0 and 100, it is good to tune the
@@ -775,13 +785,23 @@ static int fg_get_msoc(struct fg_chip *chip, int *msoc)
 	 * of the values 1-254 will be scaled to 1-99. DIV_ROUND_UP will not
 	 * be suitable here as it rounds up any value higher than 252 to 100.
 	 */
+	 pr_err("Msock=%d\n",*msoc);
+	 pr_err("Msock FSR=%d\n",FULL_SOC_RAW);
+	 pr_err("Msock FC=%d\n",FULL_CAPACITY);
+	 pr_err("Msock counter=%d\n",val);
+	 pr_err("Msock full=%d\n",val2);
+	 pr_err("Msock perc=%d\n",perc);
+	 
 	if (*msoc == FULL_SOC_RAW)
-		*msoc = 100;
+	*msoc = 100;
 	else if (*msoc == 0)
 		*msoc = 0;
-	else
+	else {
 		*msoc = DIV_ROUND_CLOSEST((*msoc - 1) * (FULL_CAPACITY - 2),
 				FULL_SOC_RAW - 2) + 1;
+	if (perc > *msoc) *msoc=perc; 
+//    *msoc=perc;
+			}
 	return 0;
 }
 
@@ -1375,18 +1395,16 @@ static int fg_load_learned_cap_from_sram(struct fg_chip *chip)
 
 	fg_dbg(chip, FG_CAP_LEARN, "learned_cc_uah:%lld nom_cap_uah: %lld\n",
 		chip->cl.learned_cc_uah, chip->cl.nom_cap_uah);
-	printk("BBox::UPD;49::%lld\n", (chip->cl.nom_cap_uah)/1000);
 
-	if(chip->cl.learned_cc_uah < chip->cl.nom_cap_uah)
-	{
+//	if(chip->cl.learned_cc_uah < chip->cl.nom_cap_uah)
+//	{
 		aging_cc = div64_s64((chip->cl.learned_cc_uah*100),
 					chip->cl.nom_cap_uah);
-		if(aging_cc < 70) {
-			printk("BBox::UEC;49::2\n");
-			printk("BBox::UPD;50::%d::%lld\n", fg_get_cycle_count(chip), (chip->cl.learned_cc_uah)/1000);
-		}
-
-	}
+	pr_err("Cycles count %d\n", fg_get_cycle_count(chip));
+	pr_err("Capacty new %lld\n", ((chip->cl.learned_cc_uah)/1000));
+	pr_err("Capacty original %lld\n", ((chip->cl.nom_cap_uah)/1000));
+	
+//	}
 	return 0;
 }
 
@@ -1737,7 +1755,7 @@ static int fg_adjust_ki_coeff_full_soc(struct fg_chip *chip, int batt_temp)
 		pr_err("Error in writing ki_coeff_full_soc, rc=%d\n", rc);
 		return rc;
 	}
-
+pr_err("Koef full_soc=%d\n", ki_coeff_full_soc);
 	chip->ki_coeff_full_soc = ki_coeff_full_soc;
 	fg_dbg(chip, FG_STATUS, "Wrote ki_coeff_full_soc %d\n",
 		ki_coeff_full_soc);
@@ -1808,7 +1826,7 @@ static int fg_configure_full_soc(struct fg_chip *chip, int bsoc)
 static int fg_charge_full_update(struct fg_chip *chip)
 {
 	union power_supply_propval prop = {0, };
-	int rc, msoc, bsoc, recharge_soc, msoc_raw;
+	int rc, msoc, bsoc, recharge_soc, msoc_raw, cc_soc, val, val2;
 
 	if (!chip->dt.hold_soc_while_full)
 		return 0;
@@ -1844,6 +1862,13 @@ static int fg_charge_full_update(struct fg_chip *chip)
 		goto out;
 	}
 	msoc = DIV_ROUND_CLOSEST(msoc_raw * FULL_CAPACITY, FULL_SOC_RAW);
+		pr_err("Recharge, %d\n", msoc);
+			rc = fg_get_sram_prop(chip, FG_SRAM_CC_SOC_SW, &cc_soc);
+		if (rc < 0)
+		return rc;
+		val = div_s64(cc_soc * chip->cl.learned_cc_uah, CC_SOC_30BIT);
+		val2= chip->cl.learned_cc_uah;
+	msoc = div64_s64(val*100, val2);
 
 	fg_dbg(chip, FG_STATUS, "msoc: %d bsoc: %x health: %d status: %d full: %d\n",
 		msoc, bsoc, chip->health, chip->charge_status,
@@ -2121,6 +2146,7 @@ static int fg_adjust_recharge_soc(struct fg_chip *chip)
 				new_recharge_soc = msoc - (FULL_CAPACITY -
 								recharge_soc);
 				chip->recharge_soc_adjusted = true;
+				pr_err(" Recharge soc =%d\n", new_recharge_soc);
 			} else {
 				/* adjusted already, do nothing */
 				return 0;
@@ -3313,6 +3339,7 @@ static int fg_get_time_to_full_locked(struct fg_chip *chip, int *val)
 		pr_err("failed to get full soc rc=%d\n", rc);
 		return rc;
 	}
+
 	full_soc = DIV_ROUND_CLOSEST(((u16)full_soc >> 8) * FULL_CAPACITY,
 								FULL_SOC_RAW);
 	act_cap_mah = full_soc * act_cap_mah / 100;
@@ -3490,7 +3517,9 @@ static int fg_get_time_to_empty(struct fg_chip *chip, int *val)
 	}
 	full_soc = DIV_ROUND_CLOSEST(((u16)full_soc >> 8) * FULL_CAPACITY,
 								FULL_SOC_RAW);
+
 	act_cap_mah = full_soc * act_cap_mah / 100;
+
 
 	divisor = CENTI_ICORRECT_C0 * 100 + CENTI_ICORRECT_C1 * msoc;
 	divisor = ibatt_avg * divisor / 100;
@@ -3868,9 +3897,6 @@ static int fg_psy_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CC_STEP_SEL:
 		pval->intval = chip->ttf.cc_step.sel;
 		break;
-	case POWER_SUPPLY_PROP_FG_RESET_CLOCK:
-		pval->intval = 0;
-		break;
 	default:
 		pr_err("unsupported property %d\n", psp);
 		rc = -EINVAL;
@@ -3881,108 +3907,6 @@ static int fg_psy_get_property(struct power_supply *psy,
 		return -ENODATA;
 
 	return 0;
-}
-
-#define BCL_RESET_RETRY_COUNT 4
-static int fg_bcl_reset(struct fg_chip *chip)
-{
-	int i, ret, rc = 0;
-	u8 val, peek_mux;
-	bool success = false;
-
-	/* Read initial value of peek mux1 */
-	rc = fg_read(chip, BATT_INFO_PEEK_MUX1(chip), &peek_mux, 1);
-	if (rc < 0) {
-		pr_err("Error in writing peek mux1, rc=%d\n", rc);
-		return rc;
-	}
-
-	val = 0x83;
-	rc = fg_write(chip, BATT_INFO_PEEK_MUX1(chip), &val, 1);
-	if (rc < 0) {
-		pr_err("Error in writing peek mux1, rc=%d\n", rc);
-		return rc;
-	}
-
-	mutex_lock(&chip->sram_rw_lock);
-	for (i = 0; i < BCL_RESET_RETRY_COUNT; i++) {
-		rc = fg_dma_mem_req(chip, true);
-		if (rc < 0) {
-			pr_err("Error in locking memory, rc=%d\n", rc);
-			goto unlock;
-		}
-
-		rc = fg_read(chip, BATT_INFO_RDBACK(chip), &val, 1);
-		if (rc < 0) {
-			pr_err("Error in reading rdback, rc=%d\n", rc);
-			goto release_mem;
-		}
-
-		if (val & PEEK_MUX1_BIT) {
-			rc = fg_masked_write(chip, BATT_SOC_RST_CTRL0(chip),
-						BCL_RESET_BIT, BCL_RESET_BIT);
-			if (rc < 0) {
-				pr_err("Error in writing RST_CTRL0, rc=%d\n",
-						rc);
-				goto release_mem;
-			}
-
-			rc = fg_dma_mem_req(chip, false);
-			if (rc < 0)
-				pr_err("Error in unlocking memory, rc=%d\n", rc);
-
-			/* Delay of 2ms */
-			usleep_range(2000, 3000);
-			ret = fg_masked_write(chip, BATT_SOC_RST_CTRL0(chip),
-						BCL_RESET_BIT, 0);
-			if (ret < 0)
-				pr_err("Error in writing RST_CTRL0, rc=%d\n",
-						rc);
-			if (!rc && !ret)
-				success = true;
-
-			goto unlock;
-		} else {
-			rc = fg_dma_mem_req(chip, false);
-			if (rc < 0) {
-				pr_err("Error in unlocking memory, rc=%d\n", rc);
-				return rc;
-			}
-			success = false;
-			pr_err_ratelimited("PEEK_MUX1 not set retrying...\n");
-			msleep(1000);
-		}
-	}
-
-release_mem:
-	rc = fg_dma_mem_req(chip, false);
-	if (rc < 0)
-		pr_err("Error in unlocking memory, rc=%d\n", rc);
-
-unlock:
-	ret = fg_write(chip, BATT_INFO_PEEK_MUX1(chip), &peek_mux, 1);
-	if (ret < 0) {
-		pr_err("Error in writing peek mux1, rc=%d\n", rc);
-		mutex_unlock(&chip->sram_rw_lock);
-		return ret;
-	}
-
-	mutex_unlock(&chip->sram_rw_lock);
-
-	/*FIH_ZZDC_Code@2018/01/17 John::[PL2O-3267] a QC solution for devices can't be charged degin*/
-	msleep(100);
-	if (fg_get_batt_id(chip) < 0) {
-		pr_err("Error in getting battery id\n");
-	}
-	/*FIH_ZZDC_Code@2018/01/17 John::[PL2O-3267] a QC solution for devices can't be charged end*/
-	if (!success)
-		return -EAGAIN;
-	else
-	{
-		pr_err("BBox;%s: rradc read failed, reset fuel gaugle\n", __func__);
-		printk("BBox::UEC;12::3\n");
-		return rc;
-	}
 }
 
 static int fg_psy_set_property(struct power_supply *psy,
@@ -4070,13 +3994,6 @@ static int fg_psy_set_property(struct power_supply *psy,
 		rc = fg_set_jeita_threshold(chip, JEITA_HOT, pval->intval);
 		if (rc < 0) {
 			pr_err("Error in writing jeita_hot, rc=%d\n", rc);
-			return rc;
-		}
-		break;
-	case POWER_SUPPLY_PROP_FG_RESET_CLOCK:
-		rc = fg_bcl_reset(chip);
-		if (rc < 0) {
-			pr_err("Error in resetting BCL clock, rc=%d\n", rc);
 			return rc;
 		}
 		break;
@@ -4177,7 +4094,6 @@ static enum power_supply_property fg_psy_props[] = {
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
 	POWER_SUPPLY_PROP_CC_STEP,
 	POWER_SUPPLY_PROP_CC_STEP_SEL,
-	POWER_SUPPLY_PROP_FG_RESET_CLOCK,
 };
 
 static const struct power_supply_desc fg_psy_desc = {
