@@ -513,8 +513,8 @@ asmlinkage __visible void __init start_kernel(void)
 //keymaster hack date only for supporting device, SAT uses depreciated version
 //ADD REPLACE SKUID
 char *keymaster_fake[2] = {"HH1", "HH6"};
-  char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-01-01";
- 
+  char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-02-05";
+//char *keymaster_fake_patch=" androidboot.fakekeymaster=2019-12-01";
 //ADD VERITY KEY FOR USAGE WITH STOCK ROMS
 char *word3[12] = {"SS2", "SAT", "C10", "HH1", "SG1", "SD1", "HH6", "B2N", "C1N", "CTL", "DRG", "PL2"};
 char *strnokia = " veritykeyid=id:8f56f02c61394639f13af4e8cfe02d087e41b936";
@@ -811,6 +811,8 @@ for (i = 0; i<2; i++)
 }
      
 }
+//add simslot 2
+strcat (command_line, " androidboot.simslot=2");
 
 //ADD VERITY KEY FOR USAGE WITH STOCK ROMS
 	setup_command_line(command_line);
