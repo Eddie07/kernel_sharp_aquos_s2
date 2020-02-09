@@ -15,27 +15,27 @@
 
 &pm660_fg {
 	qcom,battery-data = <&fih_batterydata>;
-	qcom,fg-cutoff-voltage = <3120>;
+	qcom,fg-cutoff-voltage = <3150>;
 	qcom,fg-empty-voltage = <3100>;
 	qcom,fg-vbatt-low-thr = <3200>;
 	qcom,fg-chg-term-current = <100>;	/* 100mA > 0.02C */
-	qcom,fg-sys-term-current = <(-125)>;	/* 100mA + 25mA */
+	qcom,fg-sys-term-current = <(-150)>;	/* 100mA + 25mA */
 	qcom,fg-chg-term-base-current = <75>;	/* 100mA - 25mA */
-	qcom,fg-delta-soc-thr = <1>;
 	qcom,fg-recharge-soc-thr = <99>;
-       /delete-property/ qcom,fg-auto-recharge-soc;
+       qcom,fg-auto-recharge-soc;
 	qcom,fg-jeita-thresholds = <0 1 50 58>;
+	qcom,linearize-soc;
 	qcom,hold-soc-while-full;
 	qcom,fg-force-load-profile;
 	qcom,fg-recharge-voltage = <4250>;
-	qcom,battery-thermal-coefficients = [A1 50 ff];
+	qcom,battery-thermal-coefficients = [A3 50 ff];
 	qcom,fg-rsense-sel = <0>;
 };
 
 &pm660_charger {
 	/delete-property/ qcom,batteryless-platform;
-	//qcom,auto-recharge-soc;//
-	qcom,fcc-max-ua = <3400000>;
+	qcom,auto-recharge-soc;
+	qcom,fcc-max-ua = <3100000>;
 	qcom,usb-icl-ua = <3000000>;
 	qcom,fv-max-uv = <4400000>;
 	/delete-property/ qcom,wipower-max-uw;
