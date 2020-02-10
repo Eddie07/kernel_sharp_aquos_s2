@@ -88,8 +88,8 @@ static struct step_chg_cfg step_chg_config = {
 	.hysteresis	= 50000, /* 50mV */
 	.fcc_cfg	= {
 		/* VBAT_LOW	VBAT_HIGH	FCC */
-		{3600000,	4100000,	2500000},
-		{4100001,	4400000,	2000000},
+		{3600000,	4100000,	3000000},
+		{4100001,	4400000,	3000000},
 	},
 	/*
 	 *	SOC STEP-CHG configuration example.
