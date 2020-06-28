@@ -16,7 +16,7 @@
 &mdss_mdp {
 	dsi_ft8716_ffd_video: qcom,mdss_dsi_ft8716_ffd_video_s2 {
 		fih,panel-id = <2>;
-		qcom,mdss-dsi-panel-name = "ft8716 ffd video mode dsi panel s2 without DSC";
+		qcom,mdss-dsi-panel-name = "FT8716 S2 panel";
 		qcom,mdss-dsi-panel-type = "dsi_video_mode";
 		qcom,mdss-dsi-panel-framerate = <60>;
 		qcom,mdss-dsi-virtual-channel-id = <0>;
@@ -120,6 +120,8 @@
 		qcom,mdss-dsi-lane-1-state;
 		qcom,mdss-dsi-lane-2-state;
 		qcom,mdss-dsi-lane-3-state;
+		qcom,mdss-dsi-panel-timings = [fe 3c 2a 00 70 74 2e
+				40 30 03 04 00];
 		qcom,mdss-dsi-t-clk-post = <0x0d>;
 		qcom,mdss-dsi-t-clk-pre = <0x2d>;
 		qcom,dynamic-mode-switch-enabled;
@@ -142,7 +144,7 @@
 
 		// dynamic : value 1
 		qcom,mdss-dsi-ce-on-command = [
-			29 01 00 00 00 00 03 91 00 00
+			29 01 00 00 00 00 03 91 80 00
 		];
 
 		qcom,mdss-dsi-ce-on-command-test1 = [
@@ -192,6 +194,12 @@
 			29 00 00 00 00 00 04 FF 00 00 00
 			29 00 00 00 00 00 02 00 80
 			29 01 00 00 00 00 03 FF 00 00
+		];
+				qcom,mdss-dsi-srgb-on-command = [
+				39 00 00 00 00 00 02 96 80
+		];
+		qcom,mdss-dsi-srgb-off-command = [
+				39 00 00 00 00 00 02 96 00
 		];
 
 		qcom,mdss-dsi-ct-cold-command = [
@@ -1162,6 +1170,10 @@
 		qcom,mdss-dsi-ce-on-command-state-test1 = "dsi_hs_mode";
 		qcom,mdss-dsi-ce-on-command-state-test2 = "dsi_hs_mode";
 		qcom,mdss-dsi-ce-off-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-srgb-on-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-srgb-off-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-cabc-on-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-gamma-command-state = "dsi_hs_mode";
 
 		qcom,mdss-dsi-ct-normal-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-ct-warm-command-state = "dsi_lp_mode";
@@ -1193,6 +1205,9 @@
 		qcom,mdss-pan-physical-width-dimension = <65>;
 		qcom,mdss-pan-physical-height-dimension = <123>;
 				qcom,adjust-timer-wakeup-ms = <1>;
+		qcom,mdss-dsi-pan-enable-dynamic-bitclk;
+		qcom,mdss-dsi-dynamic-bitclk_freq = <798240576 801594528 804948480
+		808302432 811656384>;
 		qcom,mdss-dsi-panel-hdr-enabled;
 		qcom,mdss-dsi-panel-hdr-color-primaries = <14500 15500 32000
 			17000 15500 30000 8000 3000>;
@@ -1209,10 +1224,30 @@
 		23 1f 07 09 05 03 04 a0
 		23 1f 07 09 05 03 04 a0
 		23 19 08 08 05 03 04 a0];
+
+	// 976 Mbps (for RF desense)
+	qcom,mdss-dsi-panel-timings-phy-v2-976 = [
+		25 1F 09 0A 06 03 04 a0
+		25 1F 09 0A 06 03 04 a0
+		25 1F 09 0A 06 03 04 a0
+		25 1F 09 0A 06 03 04 a0
+		25 1E 08 0A 06 03 04 a0];
+
+	// 912 Mbps (for RF desense)
+	qcom,mdss-dsi-panel-timings-phy-v2-912 = [
+		24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0
+		24 1f 08 09 05 03 04 a0
+		24 1b 08 09 05 03 04 a0];
+
 	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
 	qcom,mdss-dsi-bl-min-level = <1>;
 	qcom,mdss-dsi-bl-max-level = <4095>;
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+	qcom,mdss-dsi-min-refresh-rate = <48>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
 };
 
 &mdss_dsi {
