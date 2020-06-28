@@ -345,7 +345,7 @@ static void cds_cdp_cfg_attach(struct cds_config_info *cds_cfg)
 	gp_cds_context->cfg_ctx = cdp_cfg_attach(soc, gp_cds_context->qdf_ctx,
 					(void *)(&cdp_cfg));
 	if (!gp_cds_context->cfg_ctx) {
-		WMA_LOGP("%s: failed to init cfg handle", __func__);
+		WMA_LOGD("%s: failed to init cfg handle", __func__);
 		return;
 	}
 
@@ -1646,6 +1646,9 @@ QDF_STATUS cds_get_vdev_types(enum QDF_OPMODE mode, uint32_t *type,
 	case QDF_NDI_MODE:
 		*type = WMI_VDEV_TYPE_NDI;
 		break;
+	case QDF_NAN_DISC_MODE:
+		*type = WMI_VDEV_TYPE_NAN;
+		break;
 	default:
 		cds_err("Invalid device mode %d", mode);
 		status = QDF_STATUS_E_INVAL;
@@ -1693,6 +1696,24 @@ bool cds_is_packet_log_enabled(void)
 	}
 	return hdd_ctx->config->enablePacketLog;
 }
+
+/**
+ * cds_get_packet_log_buffer_size() - get packet log buffer size
+ *
+ * Return: packet log buffer size in MB
+ */
+uint8_t cds_get_packet_log_buffer_size(void)
+{
+	struct hdd_context *hdd_ctx;
+
+	hdd_ctx = gp_cds_context->hdd_context;
+	if ((NULL == hdd_ctx) || (NULL == hdd_ctx->config)) {
+		cds_alert("Hdd Context is Null");
+		return 0;
+	}
+	return hdd_ctx->config->pktlog_buf_size;
+}
+
 #endif
 
 static int cds_force_assert_target_via_pld(qdf_device_t qdf)
@@ -2360,7 +2381,7 @@ QDF_STATUS cds_flush_logs(uint32_t is_fatal,
 		  is_fatal, indicator, reason_code);
 
 	if (dump_mac_trace)
-		qdf_trace_dump_all(p_cds_context->mac_context, 0, 0, 500, 0);
+		qdf_trace_dump_all(p_cds_context->mac_context, 0, 0, 100, 0);
 
 	if (WLAN_LOG_INDICATOR_HOST_ONLY == indicator) {
 		cds_wlan_flush_host_logs_for_fatal();
