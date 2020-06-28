@@ -81,7 +81,37 @@
  * Default value is set to 1 sec.
  */
 #define MDP_TIME_PERIOD_CALC_FPS_US	1000000
+#define BKL_NODE "backlight_min_enable"
+int backlight_min = 0;
+static int bkl_data_read_show(struct seq_file *m, void *v)
+{
 
+		seq_printf(m, "%d\n", backlight_min);
+
+	return 0;
+}
+static int bkl_data_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, bkl_data_read_show, NULL);
+};
+
+static ssize_t bkl_data_write(struct file *filp, const char __user * buff, size_t len, loff_t * off)
+{
+  	int input;
+	char buf[50];
+		if(copy_from_user(buf,buff,len))
+		return -EINVAL;
+	if (sscanf(buf, "%u", &input) != 1)
+	{
+		 return -EINVAL;
+	}
+
+		pr_info("Bkl min=%d\n",input);
+		backlight_min=input;
+
+
+	return len;
+}
 static struct fb_info *fbi_list[MAX_FBI_LIST];
 static int fbi_list_index;
 
@@ -294,6 +324,14 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 
 	if (!bl_lvl && value)
 		bl_lvl = 1;
+		
+		if (value != 0 && backlight_min == 1)  {
+		
+		pr_err("Dimming, old backlight: %d\n", bl_lvl );
+		bl_lvl = backlight_min;
+		
+		}
+	
 
 	if (!IS_CALIB_MODE_BL(mfd) && (!mfd->ext_bl_ctrl || !value ||
 							!mfd->bl_level)) {
