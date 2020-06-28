@@ -5127,6 +5127,15 @@ static int mdss_fb_ioctl(struct fb_info *info, unsigned int cmd,
 	return mdss_fb_do_ioctl(info, cmd, arg, file);
 }
 
+static const struct file_operations bkl_fops = {
+	.owner = THIS_MODULE,
+	.read    = seq_read,
+	.open    = bkl_data_open,
+	.write = bkl_data_write,
+	.llseek  = seq_lseek,
+	.release = single_release
+};
+
 static int mdss_fb_register_extra_panel(struct platform_device *pdev,
 	struct mdss_panel_data *pdata)
 {
@@ -5157,6 +5166,11 @@ int mdss_register_panel(struct platform_device *pdev,
 	struct device_node *node = NULL;
 	int rc = 0;
 	bool master_panel = true;
+	
+	struct proc_dir_entry *proc_entry = NULL;
+	
+
+	proc_entry = proc_create(BKL_NODE, 0666, NULL, &bkl_fops);
 
 	if (!pdev || !pdev->dev.of_node) {
 		pr_err("Invalid device node\n");
