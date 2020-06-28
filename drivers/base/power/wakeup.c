@@ -539,10 +539,10 @@ static void wakeup_source_activate(struct wakeup_source *ws)
 		return;
 
        /* Wakelocks to ignore */
-//	if (!strcmp(ws->name, "sensor_ind")) {
-//		pr_info("FIX: wakeup source skipped %s\n", ws->name);
-//		return;
-//	}
+	//if (!strcmp(ws->name, "sensor_ind")) {
+	//	pr_info("FIX: wakeup source skipped %s\n", ws->name);
+	//	return;
+	//}
 
 
 	/*
