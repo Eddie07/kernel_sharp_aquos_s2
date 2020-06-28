@@ -1228,9 +1228,32 @@ config TOUCHSCREEN_ST
 
 	  If unsure, say N.
 
+config TOUCHSCREEN_HIMAX_CHIPSET
+	bool "Himax touchpanel CHIPSET"
+	depends on I2C
+	help
+	  Say Y here if you have a Himax CHIPSET touchscreen.
+	  HIMAX controllers are multi touch controllers which can
+	  report 10 touches at a time.
+
+	  If unsure, say N.
+
+config TOUCHSCREEN_HIMAX852XES
+       tristate "Himax touchscreens"
+       depends on I2C
+       help
+         Say Y here if you have a hx852x touchscreen.
+	 hx852x controllers are multi touch controllers which can
+	 report 5 touches at a time.
+
+         If unsure, say N.
+
+         To compile this driver as a module, choose M here: the
+         module will be called hx852xES.
+
+
 source "drivers/input/touchscreen/st/Kconfig"
-
-
+source "drivers/input/touchscreen/hx852xes/Kconfig"
 source "drivers/input/touchscreen/focaltech_touch/Kconfig"
 source "drivers/input/touchscreen/nt36xxx/Kconfig"
 source "drivers/input/touchscreen/gt1x/Kconfig"
