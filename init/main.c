@@ -497,43 +497,23 @@ asmlinkage __visible void __init start_kernel(void)
 {
 	char *command_line;
 	char *after_dashes;
+
+/* heineken-  cmdhack start*/
+    int l1, l, i, j, l2, index;
+      char *command_line2, *command_linenew, *tok;
+        
+
 // REMOVE DM-VERITY2  FORCED CHECK  HACK
   //     char word1[] = "skip_initramfs";
     char word1[] = "/dev/dm-0 dm=\"system none ro,0 1 android-verity /dev/mmcblk0p";
     char word2[] = "\"/dev/mmcblk0p";
-    char word11[] = "androidboot.device=HH1";
-    char word22[] = "androidboot.device=HH6";
-    char word111[] = "androidboot.cause=0x40000010";
-    char word222[] = "androidboot.mode=charger";
-    char word1111[] = "androidboot.veritymode=logging";
-    char word2222[] = " ";
-    char *enf = " androidboot.veritymode=enforcing";
-
- // REMOVE DM-VERITY2  FORCED CHECK  HACK END
 //keymaster hack date only for supporting device, SAT uses depreciated version
-//ADD REPLACE SKUID
-char *keymaster_fake[2] = {"HH1", "HH6"};
-  char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-02-05";
-//char *keymaster_fake_patch=" androidboot.fakekeymaster=2019-12-01";
+char *keymaster_fake[4] = {"HH1", "HH6", "DRG", "HD1"};
+char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-06-05";
 //ADD VERITY KEY FOR USAGE WITH STOCK ROMS
-char *word3[12] = {"SS2", "SAT", "C10", "HH1", "SG1", "SD1", "HH6", "B2N", "C1N", "CTL", "DRG", "PL2"};
+char *word3[13] = {"SS2", "SAT", "C10", "HH1", "SG1", "SD1", "HH6", "HD1", "B2N", "C1N", "CTL", "DRG", "PL2"};
 char *strnokia = " veritykeyid=id:8f56f02c61394639f13af4e8cfe02d087e41b936";
 char *strsharp = " veritykeyid=id:8477071bd7b5144386fef27be0ebee22d585791";
-// char *strresult=malloc(strlen(strnokia) +strlen(command_line));
-
-//ADD REPLACE SKUID
-char *sku[6] = {"300TW", "300CN", "300WW", "300C0", "300E0","300EU"};
-char *skui= " androidboot.skuid=31LKR";
-
-//ADD VERITY KEY FOR USAGE WITH STOCK ROMS END
-
-// REMOVE DM-VERITY2  FORCED CHECK  HACK
-        int index;
-        int l, i, j, l1, l2;
-
-pr_notice("String to find: %s\n", word1);
-pr_notice("String patch to: %s\n", word2);
-// REMOVE DM-VERITY2  FORCED CHECK  HACK end
 
 	/*
 	 * Need to run as early as possible, to initialize the
@@ -564,10 +544,43 @@ pr_notice("String patch to: %s\n", word2);
 	mm_init_cpumask(&init_mm);
 
 
-// REMOVE DM-VERITY2  FORCED CHECK  HACK
+/* heineken-  filter or replace unnessesary cmds*/
+
+
+   command_line2 = memblock_virt_alloc(strlen(command_line) + 1, 0);
+   command_linenew = memblock_virt_alloc(strlen(command_line) + 1, 0);
+      strcpy(command_line2, command_line);
      pr_notice("Kernel OLD command line: %s\n", command_line);
 
-    /* finding length of word */
+
+while ((tok = strsep(&command_line2, " ")) != NULL) {
+    char *pch = strstr(tok, "androidboot.skuid=");
+    if (!strcmp(tok,"androidboot.verifiedbootstate=orange")) tok="androidboot.verifiedbootstate=green";
+    if (!strcmp(tok,"androidboot.device=HH1")) tok="androidboot.device=HH6";
+    if (!strcmp(tok,"androidboot.cause=0x40000010")) tok="androidboot.mode=charger";
+    if (!strcmp(tok,"androidboot.veritymode=logging")) tok="androidboot.veritymode=enforcing";
+    if (pch) { 
+		if ((!strcmp(tok,"androidboot.skuid=300TW")) || (!strcmp(tok, "androidboot.skuid=300WW")) || (!strcmp(tok, "androidboot.skuid=300CN")) || 
+		   (!strcmp(tok, "androidboot.skuid=300E0")) || 
+                   (!strcmp(tok, "androidboot.skuid=300EU")) || (!strcmp(tok, "androidboot.skuid=31LKR")))  tok = "androidboot.skuid=31LKR";
+			else
+		    tok = "androidboot.skuid=600WW";
+         	}
+
+    if (strcmp(tok,"")) {strcat (command_linenew, " " ); strcat (command_linenew, tok ); }
+    pr_notice(" %s\n", tok);
+}
+
+for (i = 0; command_line[i] != '\0';i++) command_line[i]=command_linenew[i];
+
+
+
+
+// REMOVE DM-VERITY2  FORCED CHECK  HACK
+     pr_notice("Kernel NEW command line: %s\n", command_line);
+
+
+   /* finding length of word */
            for (l = 0; word1[l] != '\0'; l++);
            for (l1 = 0; word2[l1] != '\0'; l1++);
 
@@ -597,11 +610,11 @@ pr_notice("String patch to: %s\n", word2);
    if (index !=  - 1)
    {
         
-    /* finding length of word */
-    for (l = 0; word1[l] != '\0'; l++);
- l2 = 0;
-  for (i = index; boot_command_line[i] != '\0'; i++)
-     {
+    	/* finding length of word */
+    	for (l = 0; word1[l] != '\0'; l++);
+ 	l2 = 0;
+  	for (i = index; boot_command_line[i] != '\0'; i++)
+    	 {
          if (l2 < l1) 
                 {
                    command_line[i] = word2[l2];
@@ -609,178 +622,30 @@ pr_notice("String patch to: %s\n", word2);
 
                   }
 
-        command_line[i + l1] = command_line[i + l];
-       }
-     pr_info("String replaced. Option removed:%s\n",word1);
-   }
+      	  command_line[i + l1] = command_line[i + l];
+      	 }
+     	pr_info("String replaced. Option removed:%s\n",word1);
+   	}
    else
-  {
+  		{
      pr_info("String not found and not replaced patched\n");
    }
-   pr_info( "-------------------------iiiiiiiiiiiiiiiiiiiiiiiiii----------------iiiiiiiiii---ii& \n");
-   pr_notice("Kernel NEW command line: %s\n", command_line);
-//verity replace
-
-    /* finding length of word */
-           for (l = 0; word11[l] != '\0'; l++);
-           for (l1 = 0; word22[l1] != '\0'; l1++);
-
-           for (i = 0, j = 0; command_line[i] != '\0' && word11[j] != '\0'; i++)
-              {
-                if (command_line[i] == word11[j])
-                  {
-                         j++;
-                  }              
-                  else
-                    {
-                    j = 0;
-                    }
-               }
- 
-      if (j == l)
-          {
-        /* substring found */
-            index =i - j;
-          }
-          else
-        {
-        index = -1;
-        }
-
-   if (index !=  - 1)
-   { 
-    /* finding length of word */
-    for (l = 0; word11[l] != '\0'; l++);
- l2 = 0;
-  for (i = index; command_line[i] != '\0'; i++)
-     {
-         if (l2 < l1) 
-                {
-                   command_line[i] = word22[l2];
-                  l2++;
-                  }
-        command_line[i + l1] = command_line[i + l];
-       }
-     pr_info("String replaced. Option removed:%s\n",word11);
-   }
-   else
-  {
-     pr_info("String not found and not replaced patched\n");
-   }
-//fih mode
+  
+   pr_notice("Kernel NEW command line 2: %s\n", command_line);
 
 
-    /* finding length of word */
-           for (l = 0; word111[l] != '\0'; l++);
-           for (l1 = 0; word222[l1] != '\0'; l1++);
-
-           for (i = 0, j = 0; command_line[i] != '\0' && word111[j] != '\0'; i++)
-              {
-                if (command_line[i] == word111[j])
-                  {
-                         j++;
-                  }              
-                  else
-                    {
-                    j = 0;
-                    }
-               }
- 
-      if (j == l)
-          {
-        /* substring found */
-            index =i - j;
-          }
-          else
-        {
-        index = -1;
-        }
-
-   if (index !=  - 1)
-   { 
-    /* finding length of word */
-    for (l = 0; word111[l] != '\0'; l++);
- l2 = 0;
-  for (i = index; command_line[i] != '\0'; i++)
-     {
-         if (l2 < l1) 
-                {
-                   command_line[i] = word222[l2];
-                  l2++;
-                  }
-        command_line[i + l1] = command_line[i + l];
-       }
-     pr_info("String replaced. Option removed:%s\n",word111);
-   }
-   else
-  {
-     pr_info("String not found and not replaced patched\n");
-   }
-   pr_info( "-------------------------iiiiiiiiiiiiiiiiiiiiiiiiii----------------iiiiiiiiii---ii& \n");
-   pr_notice("Kernel NEW command line: %s\n", command_line);
-
- /* finding length of word */
-           for (l = 0; word1111[l] != '\0'; l++);
-           for (l1 = 0; word2222[l1] != '\0'; l1++);
-
-           for (i = 0, j = 0; command_line[i] != '\0' && word1111[j] != '\0'; i++)
-              {
-                if (command_line[i] == word1111[j])
-                  {
-                         j++;
-                  }              
-                  else
-                    {
-                    j = 0;
-                    }
-               }
- 
-      if (j == l)
-          {
-        /* substring found */
-            index =i - j;
-          }
-          else
-        {
-        index = -1;
-        }
-
-   if (index !=  - 1)
-   { 
-    /* finding length of word */
-    for (l = 0; word1111[l] != '\0'; l++);
- l2 = 0;
-  for (i = index; command_line[i] != '\0'; i++)
-     {
-         if (l2 < l1) 
-                {
-                   command_line[i] = word2222[l2];
-                  l2++;
-                  }
-        command_line[i + l1] = command_line[i + l];
-       }
-     strcat (command_line, enf );
-     pr_info("String replaced. Option removed:%s\n",word1111);
-   }
-   else
-  {
-     pr_info("String not found and not replaced patched\n");
-   }
-
-// REMOVE DM-VERITY2  FORCED CHECK  HACK end
-//ADD VERITY KEY FOR USAGE WITH STOCK ROMS
-// *strresult=malloc(strlen(strnokia) +strlen(command_line));
-for (i = 0; i<12; i++)
+//DM-verity for stock???
+for (i = 0; i<13; i++)
 {  
           char *pch = strstr(command_line, word3 [i]);
 
-          if ((pch) && (i>6))
+          if ((pch) && (i>7))
           {
              pr_notice("Dm-verity NOKIA found \n");
              i=12;
              strcat (command_line, strnokia );
            }
-          if ((pch) && (i<7))
+          if ((pch) && (i<8))
          {
               pr_notice("Dm-verity SHARP found \n");
              i=12;
@@ -788,25 +653,16 @@ for (i = 0; i<12; i++)
          }
 }
 
-for (i = 0; i<6; i++)
-{  
-          char *pch = strstr(command_line, sku [i]);
-        if (pch)
-{
-             pr_notice("SKUID found \n");
-             i=6;
-             strcat (command_line, skui );
-}
-     
-}
 
-for (i = 0; i<2; i++)
+
+//making fake date in props to patched keymaster to boot -targets with qti-keymaster
+for (i = 0; i<4; i++)
 {  
           char *pch = strstr(command_line, keymaster_fake [i]);
         if (pch)
 {
              pr_notice("MODEL SD1 sdm630 found \n");
-             i=6;
+             i=7;
              strcat (command_line, keymaster_fake_patch );
 }
      
@@ -814,7 +670,10 @@ for (i = 0; i<2; i++)
 //add simslot 2
 strcat (command_line, " androidboot.simslot=2");
 
-//ADD VERITY KEY FOR USAGE WITH STOCK ROMS
+/* heineken-  cmdhack end*/
+
+ pr_notice("Kernel NEW command line 3: %s\n", command_line);
+
 	setup_command_line(command_line);
 	setup_nr_cpu_ids();
 	setup_per_cpu_areas();
