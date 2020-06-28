@@ -139,6 +139,12 @@
 			29 00 00 00 00 00 02 00 80
 			29 01 00 00 00 00 03 FF 00 00
 		];
+				qcom,mdss-dsi-srgb-on-command = [
+				39 00 00 00 00 00 02 96 80
+		];
+		qcom,mdss-dsi-srgb-off-command = [
+				39 00 00 00 00 00 02 96 00
+		];
 
 		qcom,mdss-dsi-ct-cold-command = [
 			// Enable CMD2
@@ -294,7 +300,8 @@
 
 		qcom,mdss-dsi-ce-on-command-state = "dsi_hs_mode";
 		qcom,mdss-dsi-ce-off-command-state = "dsi_hs_mode";
-
+				qcom,mdss-dsi-srgb-on-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-srgb-off-command-state = "dsi_hs_mode";
 		fih,mdss-dsi-write-reg-command = [
 			39 01 00 00 00 00 04 00 00 00 00
 		];
@@ -345,21 +352,20 @@ qcom,mdss-dsi-panel-blackness-level = <3230>;
 };
 
 &dsi_ft8716u_ffd_video {
-	qcom,mdss-dsi-panel-timings-phy-v2 = [
-		23 1f 07 09 05 03 04 a0
-		23 1f 07 09 05 03 04 a0
-		23 1f 07 09 05 03 04 a0
-		23 1f 07 09 05 03 04 a0
-		23 19 08 08 05 03 04 a0
-	];
+        qcom,mdss-dsi-panel-timings-phy-v2 = [26 21 09 0b 06 03 04 a0
+                26 21 09 0b 06 03 04 a0
+                26 21 09 0b 06 03 04 a0
+                26 21 09 0b 06 03 04 a0
+                26 20 0a 0b 06 03 04 a0];
+
 	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
 	qcom,mdss-dsi-bl-min-level = <1>;
 	qcom,mdss-dsi-bl-max-level = <4095>;
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 	qcom,mdss-dsi-min-refresh-rate = <53>;
-	qcom,mdss-dsi-max-refresh-rate = <70>;
-	qcom,mdss-dsi-pan-enable-dynamic-fps;
-        qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+//	qcom,mdss-dsi-pan-enable-dynamic-fps;
+ //       qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 };
 
 &mdss_dsi {
@@ -390,7 +396,6 @@ qcom,mdss-dsi-panel-blackness-level = <3230>;
 &pm660l_wled {
 	qcom,fs-curr-ua = <20000>;
 	qcom,led-strings-list = [00 01 02];
-	qcom,en-cabc;
 };
 
 &soc {
