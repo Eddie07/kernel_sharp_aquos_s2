@@ -226,7 +226,7 @@ static struct dsi_cmd_desc backlight_cmd = {
 };
 	/* Sharp HD1 case */
 static struct dsi_cmd_desc backlight_cmd_hd1 = {
-	{DTYPE_DCS_LWRITE1, 1, 0, 0, 1, sizeof(led_pwm1_hd1)},
+	{DTYPE_DCS_LWRITE, 1, 0, 0, 1, sizeof(led_pwm1_hd1)},
 	led_pwm1_hd1
 };
 	/* Sharp HD1 case */
@@ -251,8 +251,8 @@ static void mdss_dsi_panel_bklt_dcs(struct mdss_dsi_ctrl_pdata *ctrl, int level)
 	/* Sharp HD1 case */
 	memset(&cmdreq, 0, sizeof(cmdreq));
 		/* Sharp HD1 case */
-	if((strstr(saved_command_line, "androidboot.device=HD1"))
-	cmdreq.cmds = &backlight_cmd_hd1
+	if (strstr(saved_command_line, "androidboot.device=HD1"))
+	cmdreq.cmds = &backlight_cmd_hd1;
 	else
 	cmdreq.cmds = &backlight_cmd;
 		/* Sharp HD1 case */
