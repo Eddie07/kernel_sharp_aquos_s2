@@ -1,0 +1,8 @@
+
+/* GPU overrides for SDM636  Nokia support in Sharp ROM works for HD1 also 
+Note you must have renamed firmware in vednor firmware  a512_zap_nokia */
+&soc {
+	pil_gpu: qcom,kgsl-hyp {
+		qcom,firmware-name = "a512_zap_nokia";
+	};
+};

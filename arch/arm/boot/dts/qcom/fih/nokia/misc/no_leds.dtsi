@@ -1,0 +1,9 @@
+&spmi_bus {
+	pm660l_3: qcom,pm660l@3 {
+			qcom,leds@d000 {
+				status = "disabled";
+			};
+	};
+
+};
+

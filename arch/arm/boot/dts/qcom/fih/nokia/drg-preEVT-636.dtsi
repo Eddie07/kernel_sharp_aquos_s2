@@ -39,6 +39,9 @@
 /* Fingerprint */
 #include "fingerprint/fingerprint-gf5288-evt.dtsi"
 
+/* leds */
+#include "misc/no_leds.dtsi"
+
 /* Sensor */
 /* NO HALL Sensor */
 
@@ -51,3 +54,7 @@
 #include "display/dsi-panel-fih-ctc-otm1911a-fhd-video.dtsi"
 /* SW4-HL-Display-OTM1911A-AUO-BringUp-00+_20180221 */
 #include "display/dsi-panel-fih-auo-otm1911a-fhd-video.dtsi"
+
+/* My multivendor */
+#include "misc/multivendor.dtsi"
+
