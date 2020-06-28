@@ -759,12 +759,12 @@ static int __init himax_common_init(void)
 /* Heineken: FIH model check. Supported model is HD1 */
 	if (strstr(saved_command_line, "androidboot.device=HD1") != NULL)
     	{ 
-    		I"[Heineken] device is supported");
+    		I("[Heineken] device is supported\n");
     		async_schedule(himax_common_init_async, NULL);
     	} 
 		else 
 		{ 
-			I"[Heineken] device is not supported");
+			I("[Heineken] device is not supported\n");
 		}
 /* Heineken: FIH model check. Supported model is HD1 */
     return 0;
