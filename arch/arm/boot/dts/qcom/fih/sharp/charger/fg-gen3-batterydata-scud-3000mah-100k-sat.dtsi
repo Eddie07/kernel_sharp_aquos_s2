@@ -1,11 +1,11 @@
 qcom,sat_scud_3000mah_100k_4350mv {
 			qcom, = <24>;
-			qcom,max-voltage-uv = <0x426030>;
+	qcom,max-voltage-uv = <4400000>;
 			qcom,fg-cc-cv-threshold-mv = <0x10f4>;
 			qcom,nom-batt-capacity-mah = <0xb90>;
-			qcom,fastchg-current-ma = <0x834>;
+			qcom,fastchg-current-ma = <3000>;
 			qcom,batt-id-kohm = <100>;
-			qcom,battery-beta = <0xd6b>;
+			qcom,battery-beta = <3435>;
 			qcom,battery-type = "sat_scud_3000mah_100k_4350mv";
 			qcom,checksum = <0x8f2>;
 			qcom,gui-version = "PM660GUI - 0.0.0.45";
