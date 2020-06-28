@@ -30,8 +30,15 @@
 		qcom,switch-source = <&pm660l_switch1>;
 		status = "ok";
 	};
-
-	/include/ "fih/nokia/camera/dummy_flash.dtsi"
+	tlmm: pinctrl@03000000 {
+		compatible = "qcom,sdm660-pinctrl";
+		reg = <0x03000000 0xc00000>;
+		interrupts = <0 208 0>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+	};
 
 	rear_cam_avdd_gpio_regulator: rear_cam_avdd_fixed_regulator {
 		compatible = "regulator-fixed";
@@ -272,17 +279,15 @@
 
     eeprom2: qcom,eeprom@2 {
 		cell-index = <2>;
-		reg = <0x02>;
+		reg = <0x2>;
 		compatible = "qcom,eeprom";
-		qcom,cci-master = <1>;
-	cam_vio-supply = <&pm660_l11>;
+		cam_vio-supply = <&pm660_l11>;
 		cam_vana-supply = <&pm660l_bob>;
-			cam_vdig-supply = <&pm660_s5>;
-		qcom,cam-vreg-name = "cam_vio",	"cam_vana", "cam_vdig";
+		cam_vdig-supply = <&pm660_s5>;
+		qcom,cam-vreg-name = "cam_vio", "cam_vana", "cam_vdig";
 		qcom,cam-vreg-min-voltage = <1780000 3300000 1350000>;
 		qcom,cam-vreg-max-voltage = <1950000 3600000 1350000>;
 		qcom,cam-vreg-op-mode = <105000 80000 105000>;
-
 		qcom,gpio-no-mux = <0>;
 		pinctrl-names = "cam_default", "cam_suspend";
 		pinctrl-0 = <&cam_sensor_mclk1_active
@@ -294,17 +299,22 @@
 			<&tlmm 13 0>,
 			<&tlmm 40 0>;
 		qcom,gpio-reset = <1>;
-				qcom,gpio-req-tbl-num = <0 1 2 3>;
-				qcom,gpio-req-tbl-flags = <1 0 0 0>;
-				qcom,gpio-req-tbl-label = "FRONT_MCLK", "FRONT_RESET", "CAM_VDIG", "CAM_VANA";
+		qcom,gpio-vdig = <2>;
+		qcom,gpio-vana = <3>;
+		qcom,gpio-req-tbl-num = <0 1 2 3>;
+		qcom,gpio-req-tbl-flags = <1 0 0 0>;
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK",
+					"CAM_RESET",
+					"CAM_VDIG",
+					"CAM_VANA";
+		qcom,sensor-position = <1>;
+		qcom,sensor-mode = <0>;
+		qcom,cci-master = <1>;
+		status = "ok";
 		clocks = <&clock_mmss MCLK1_CLK_SRC>,
 			<&clock_mmss MMSS_CAMSS_MCLK1_CLK>;
-	      qcom,sensor-position = <1>;
-				qcom,sensor-mode = <0>;
 		clock-names = "cam_src_clk", "cam_clk";
 		qcom,clock-rates = <24000000 0>;
-			qcom,gpio-vdig = <2>;
-				qcom,gpio-vana = <3>;
 	};
 
 	qcom,camera@0 { //wide
@@ -352,7 +362,7 @@
 	qcom,camera@1 { //rear2
 		cell-index = <1>;
 		compatible = "qcom,camera";
-		reg = <0x01>;
+		reg = <0x1>;
 		qcom,special-support-sensors = "s5k4h8_s2p";
 		qcom,eeprom-src = <&eeprom1>;
 		qcom,csiphy-sd-index = <0>;
@@ -429,12 +439,14 @@
 			<&tlmm 40 0>;
 
 		qcom,gpio-reset = <1>;
-				qcom,gpio-req-tbl-num = <0 1 2 3>;
-				qcom,gpio-req-tbl-flags = <1 0 0 0>;
-				qcom,gpio-req-tbl-label = "FRONT_MCLK", "FRONT_RESET", "CAM_VDIG", "CAM_VANA";
-
-	qcom,gpio-vdig = <2>;
-		qcom,gpio-vana = <3>;//4
+		qcom,gpio-vdig = <2>;
+		qcom,gpio-vana = <3>;
+		qcom,gpio-req-tbl-num = <0 1 2 3>;
+		qcom,gpio-req-tbl-flags = <1 0 0 0>;
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK",
+					"CAM_RESET",
+					"CAM_VDIG",
+					"CAM_VANA";
 		qcom,sensor-position = <1>;
 		qcom,sensor-mode = <0>;
 		qcom,cci-master = <1>;
