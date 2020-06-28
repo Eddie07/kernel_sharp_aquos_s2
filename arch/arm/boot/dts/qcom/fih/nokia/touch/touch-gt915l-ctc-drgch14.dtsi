@@ -69,56 +69,6 @@
                     input-enable;
             };
     };
-
-    ts_rst_default: ts_rst_default {
-			mux {
-				pins = "gpio66";
-				function = "gpio";
-			};
-			config {
-				pins = "gpio66";
-				drive-strength = <16>;
-				/*bias-pull-up;*/
-				input-enable;
-				bias-disable;
-			};
-		};
-
-		ts_rst_output_high: ts_rst_output_high {
-			mux {
-				pins = "gpio66";
-				function = "gpio";
-			};
-			config {
-				pins = "gpio66";
-				output-high;
-			};
-		};
-
-		ts_rst_output_low: ts_rst_output_low {
-			mux {
-				pins = "gpio66";
-				function = "gpio";
-			};
-			config {
-				pins = "gpio66";
-				output-low;
-			};
-		};
-
-		ts_rst_input: ts_rst_input {
-			mux {
-				pins = "gpio66";
-				function = "gpio";
-			};
-			config {
-				pins = "gpio66";
-				input-enable;
-				bias-disable;
-			};
-		};
-
-
 };
                 
 &i2c_4 {
@@ -129,18 +79,11 @@
       status = "okay";
       interrupt-parent = <&tlmm>;
       interrupts = <67 0x2800>;
-	pinctrl-names = "gdix_ts_int_default", "gdix_ts_int_output_low",
-			"gdix_ts_int_output_high", "gdix_ts_int_input",
-			"gdix_ts_rst_default", "gdix_ts_rst_output_low",
-			"gdix_ts_rst_output_high", "gdix_ts_rst_input";
-		pinctrl-0 = <&ts_int_default>;
-		pinctrl-1 = <&ts_int_output_low>;
-		pinctrl-2 = <&ts_int_output_high>;
-		pinctrl-3 = <&ts_int_input>;
-		pinctrl-4 = <&ts_rst_default>;
-		pinctrl-5 = <&ts_rst_output_low>;
-		pinctrl-6 = <&ts_rst_output_high>;
-		pinctrl-7 = <&ts_rst_input>;
+      pinctrl-names = "default", "int-output-low","int-output-high", "int-input";
+      pinctrl-0 = <&ts_int_default>;
+      pinctrl-1 = <&ts_int_output_low>;
+      pinctrl-2 = <&ts_int_output_high>;
+      pinctrl-3 = <&ts_int_input>;
       vdd_ana-supply = <&pm660l_l6>;		/* TP VCI - L6B(3.3V) */
       vcc_i2c-supply = <&pm660_l11>;		/* TP I2C - L11A(1.8V) */
 

@@ -127,30 +127,30 @@ static s32 tool_i2c_write_with_extra(u8 *buf, u16 len)
 
 static void register_i2c_func(void)
 {
-	/* if (!strcmp(IC_TYPE, "GT818", 5)
-	 *  || !strcmp(IC_TYPE, "GT816", 5)
-	 *  || !strcmp(IC_TYPE, "GT811", 5)
-	 *  || !strcmp(IC_TYPE, "GT818F", 6)
-	 *  || !strcmp(IC_TYPE, "GT827", 5)
-	 *  || !strcmp(IC_TYPE,"GT828", 5)
-	 *  || !strcmp(IC_TYPE, "GT813", 5))
-	 */
-	if (strcmp(IC_TYPE, "GT8110") &&
-	    strcmp(IC_TYPE, "GT8105") &&
-	    strcmp(IC_TYPE, "GT801") &&
-	    strcmp(IC_TYPE, "GT800") &&
-	    strcmp(IC_TYPE, "GT801PLUS") &&
-	    strcmp(IC_TYPE, "GT811") &&
-	    strcmp(IC_TYPE, "GTxxx") &&
-	    strcmp(IC_TYPE, "GT9XX")) {
-		tool_i2c_read = tool_i2c_read_with_extra;
-		tool_i2c_write = tool_i2c_write_with_extra;
-		dev_dbg(&gt_client->dev, "I2C function: with pre and end cmd!");
-	} else {
-		tool_i2c_read = tool_i2c_read_no_extra;
-		tool_i2c_write = tool_i2c_write_no_extra;
-		dev_info(&gt_client->dev, "I2C function: without pre and end cmd!");
-	}
+    /* if (!strncmp(IC_TYPE, "GT818", 5)
+     *  || !strncmp(IC_TYPE, "GT816", 5)
+     *  || !strncmp(IC_TYPE, "GT811", 5)
+     *  || !strncmp(IC_TYPE, "GT818F", 6)
+     *  || !strncmp(IC_TYPE, "GT827", 5)
+     *  || !strncmp(IC_TYPE,"GT828", 5)
+     *  || !strncmp(IC_TYPE, "GT813", 5))
+     */
+    if (strncmp(IC_TYPE, "GT8110", 6) &&
+        strncmp(IC_TYPE, "GT8105", 6) &&
+        strncmp(IC_TYPE, "GT801", 5) &&
+        strncmp(IC_TYPE, "GT800", 5) &&
+        strncmp(IC_TYPE, "GT801PLUS", 9) &&
+        strncmp(IC_TYPE, "GT811", 5) &&
+        strncmp(IC_TYPE, "GTxxx", 5) &&
+        strncmp(IC_TYPE, "GT9XX", 5)) {
+        tool_i2c_read = tool_i2c_read_with_extra;
+        tool_i2c_write = tool_i2c_write_with_extra;
+        dev_dbg(&gt_client->dev, "I2C function: with pre and end cmd!");
+    } else {
+        tool_i2c_read = tool_i2c_read_no_extra;
+        tool_i2c_write = tool_i2c_write_no_extra;
+        dev_info(&gt_client->dev, "I2C function: without pre and end cmd!");
+    }
 }
 
 static void unregister_i2c_func(void)
@@ -190,7 +190,7 @@ s32 init_wr_node(struct i2c_client *client)
 	register_i2c_func();
 
 	tool_set_proc_name(procname);
-	goodix_proc_entry = proc_create(procname, 0664, NULL, &gtp_proc_ops);
+    goodix_proc_entry = proc_create(procname, 0666, NULL, &gtp_proc_ops);
 	if (!goodix_proc_entry) {
 		dev_err(&gt_client->dev, "Couldn't create proc entry!");
 		return FAIL;

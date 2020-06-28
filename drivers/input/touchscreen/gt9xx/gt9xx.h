@@ -61,7 +61,18 @@
 /***************************PART1:ON/OFF define*******************************/
 #define GTP_DEBUG_ON          1
 #define GTP_DEBUG_ARRAY_ON    0
-#define GTP_DEBUG_FUNC_ON     0
+#define GTP_DEBUG_FUNC_ON     1
+
+#define TRULY_ID  0
+#define HLT_ID    1
+#define OFILM_ID  2
+
+enum {
+    DEV_DRG_HLT13 = 0,
+    DEV_DRG_HLT14,
+    DEV_CTL_HLT13,
+    DEV_CTL_HLT14
+};
 
 struct goodix_point_t {
 	int id;
@@ -99,6 +110,7 @@ struct goodix_ts_platform_data {
 	u32 power_off_sleep;
 	u32 resume_in_workqueue;
 	u32 pen_suppress_finger;
+    u32 devinfo;
 	struct goodix_config_data config;
 };
 
@@ -109,7 +121,7 @@ struct goodix_ts_esd {
 };
 
 enum {
-	REPORT_THREAD_ENABLED = 0,
+    WORK_THREAD_ENABLED = 0,
 	HRTIMER_USED,
 	FW_ERROR,
 
@@ -124,14 +136,10 @@ enum {
 
 struct goodix_pinctrl {
 	struct pinctrl *pinctrl;
-	struct pinctrl_state *int_default;
+    struct pinctrl_state *default_sta;
 	struct pinctrl_state *int_out_high;
 	struct pinctrl_state *int_out_low;
 	struct pinctrl_state *int_input;
-	struct pinctrl_state *rst_default;
-	struct pinctrl_state *rst_out_high;
-	struct pinctrl_state *rst_out_low;
-	struct pinctrl_state *rst_input;
 };
 
 struct goodix_fw_info {
@@ -164,6 +172,7 @@ struct goodix_ts_data {
 	struct goodix_fw_info fw_info;
 	bool force_update;
 	bool init_done;
+    unsigned long timestamp;
 };
 
 /************************* PART2:TODO define *******************************/
@@ -224,6 +233,25 @@ struct goodix_ts_data {
 }
 /* TODO: define your config for Sensor_ID == 4 here, if needed */
 #define CTP_CFG_GROUP4 {\
+    0x53,0xD0,0x02,0x00,0x05,0x05,0xF5,0xD5,0x21,0x48,0x2D,0x0F,\
+    0x5A,0x41,0x0E,0x05,0x00,0x00,0x32,0x32,0x20,0x00,0x05,0x14,\
+    0x14,0x1A,0x14,0x8B,0x2B,0x0C,0xB5,0xB7,0xEB,0x04,0xFF,0xFE,\
+    0x00,0x22,0x33,0x10,0x3C,0x80,0x00,0x00,0x00,0x1E,0x12,0x41,\
+    0x23,0x12,0x5A,0xAA,0xBE,0x4A,0x55,0x04,0x00,0x14,0x19,0x04,\
+    0x80,0xAB,0x00,0x7F,0xAF,0x64,0x7E,0xB3,0x00,0x7E,0xB7,0x00,\
+    0x7B,0xBB,0x3C,0x7B,0x08,0x30,0x00,0x00,0xF8,0x70,0x50,0xFF,\
+    0xFF,0x17,0x00,0x46,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x1E,\
+    0x08,0x46,0x80,0x08,0x0A,0x00,0xA0,0x00,0x3C,0x28,0x19,0x19,\
+    0x80,0x11,0x00,0x00,0x18,0x16,0x14,0x12,0x10,0x0E,0x0C,0x0A,\
+    0x08,0x06,0x04,0x02,0xFF,0xFF,0x28,0x00,0x32,0x20,0x00,0x06,\
+    0x00,0x00,0x0A,0x06,0x10,0x08,0x0A,0x22,0xEB,0x04,0x26,0x24,\
+    0x22,0x21,0x20,0x1F,0x1E,0x1D,0x1C,0x18,0x16,0x12,0x10,0x0F,\
+    0x0C,0x0A,0x08,0x06,0x04,0x02,0x00,0x13,0xFF,0xFF,0xFF,0xFF,\
+    0x00,0x00,0x00,0x02,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,\
+    0x00,0x00,0x00,0x00,0x28,0x0B,0x0B,0x00,0x00,0x00,0x00,0x00,\
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xE6,0x10,0xEF,0x01\
 }
 
 /* TODO: define your config for Sensor_ID == 5 here, if needed */
@@ -231,8 +259,8 @@ struct goodix_ts_data {
 }
 
 /* STEP_2(REQUIRED): Customize your I/O ports & I/O operations */
-#define GTP_RST_PORT    64 /* EXYNOS4_GPX2(0) */
-#define GTP_INT_PORT    65 /* EXYNOS4_GPX2(1) */
+#define GTP_RST_PORT    66 /* EXYNOS4_GPX2(0) */
+#define GTP_INT_PORT    67 /* EXYNOS4_GPX2(1) */
 
 #define GTP_GPIO_AS_INPUT(pin)          (gpio_direction_input(pin))
 #define GTP_GPIO_AS_INT(pin)            (GTP_GPIO_AS_INPUT(pin))
@@ -293,35 +321,35 @@ struct goodix_ts_data {
 #define RESOLUTION_LOC        3
 #define TRIGGER_LOC           8
 
-#define CFG_GROUP_LEN(p_cfg_grp)  ARRAY_SIZE(p_cfg_grp)
+#define CFG_GROUP_LEN(p_cfg_grp)  (sizeof(p_cfg_grp) / sizeof(p_cfg_grp[0]))
 /* Log define */
 #define GTP_DEBUG(fmt, arg...) \
 do { \
-	if (GTP_DEBUG_ON) {\
-		pr_info("<<-GTP-DEBUG->> [%d]"fmt"\n", __LINE__, ##arg);\
-	} \
+    if (GTP_DEBUG_ON) {\
+        pr_err("<<-GTP-DEBUG->> [%d]"fmt"\n", __LINE__, ##arg);\
+    } \
 } while (0)
 #define GTP_DEBUG_ARRAY(array, num) \
 do { \
-	s32 i;\
-	u8 *a = array;\
-	if (GTP_DEBUG_ARRAY_ON) {\
-		pr_warn("<<-GTP-DEBUG-ARRAY->>\n");\
-		for (i = 0; i < (num); i++) {\
-			pr_warn("%02x  ", (a)[i]);\
-			if ((i + 1) % 10 == 0) {\
-				pr_warn("\n");\
-			} \
-		} \
-		pr_warn("\n");\
-	} \
+    s32 i;\
+    u8 *a = array;\
+    if (GTP_DEBUG_ARRAY_ON) {\
+        pr_err("<<-GTP-DEBUG-ARRAY->>\n");\
+        for (i = 0; i < (num); i++) {\
+            pr_err("%02x  ", (a)[i]);\
+            if ((i + 1) % 10 == 0) {\
+                pr_err("\n");\
+            } \
+        } \
+        pr_warn("\n");\
+    } \
 } while (0)
 #define GTP_DEBUG_FUNC() \
 do {\
-	if (GTP_DEBUG_FUNC_ON) {\
-		pr_warn("<<-GTP-FUNC->>  Func:%s@Line:%d\n", \
-		__func__, __LINE__);\
-	} \
+    if (GTP_DEBUG_FUNC_ON) {\
+        pr_err("<<-GTP-FUNC->>  Func:%s@Line:%d\n", \
+        __func__, __LINE__);\
+    } \
 } while (0)
 #define GTP_SWAP(x, y) \
 do {\
@@ -344,14 +372,14 @@ extern void gtp_work_control_enable(struct goodix_ts_data *ts, bool enable);
 #ifdef CONFIG_TOUCHSCREEN_GT9XX_UPDATE
 extern u16 show_len;
 extern u16 total_len;
-extern u8 gup_init_update_proc(struct goodix_ts_data *ts);
+extern u8 gup_init_update_proc(struct goodix_ts_data *);
 extern s32 gup_update_proc(void *dir);
 extern s32 gup_enter_update_mode(struct i2c_client *client);
 extern void gup_leave_update_mode(struct i2c_client *client);
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_GT9XX_TOOL
-extern s32 init_wr_node(struct i2c_client *client);
+extern s32 init_wr_node(struct i2c_client *);
 extern void uninit_wr_node(void);
 #endif
 
@@ -359,17 +387,14 @@ extern void uninit_wr_node(void);
 extern struct i2c_client *i2c_connect_client;
 extern void gtp_reset_guitar(struct i2c_client *client, s32 ms);
 extern void gtp_int_output(struct goodix_ts_data *ts, int level);
-extern void gtp_rst_output(struct goodix_ts_data *ts, int level);
-extern void gtp_rst_input(struct goodix_ts_data *ts);
 extern s32 gtp_send_cfg(struct i2c_client *client);
-extern s32 gtp_get_fw_info(struct i2c_client *client,
-			   struct goodix_fw_info *fw_info);
-extern s32 gtp_i2c_read_dbl_check(struct i2c_client *client,
-				  u16 addr, u8 *rxbuf, int len);
-extern int gtp_i2c_read(struct i2c_client *client, u8 *buf, int len);
-extern int gtp_i2c_write(struct i2c_client *client, u8 *buf, int len);
+extern s32 gtp_get_fw_info(struct i2c_client *, struct goodix_fw_info *fw_info);
+extern s32 gtp_i2c_read_dbl_check(struct i2c_client *, u16, u8 *, int);
+extern int gtp_i2c_read(struct i2c_client *, u8 *, int);
+extern int gtp_i2c_write(struct i2c_client *, u8 *, int);
 extern s32 gtp_fw_startup(struct i2c_client *client);
 extern int gtp_ascii_to_array(const u8 *src_buf, int src_len, u8 *dst_buf);
+extern s32 fih_gtp_read_version(struct i2c_client *client, u16* version);
 /*********** For gt9xx_update End *********/
 
 #endif /* _GOODIX_GT9XX_H_ */

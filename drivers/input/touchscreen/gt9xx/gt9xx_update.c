@@ -28,9 +28,24 @@
 #define GUP_REG_FW_MSG		0x41E4
 #define GUP_REG_PID_VID		0x8140
 
-#define FIRMWARE_NAME_LEN_MAX		256
-#define GOODIX_FIRMWARE_FILE_NAME	"goodix_firmware.bin"
-#define GOODIX_CONFIG_FILE_NAME		"goodix_config.cfg"
+#define FIRMWARE_NAME_LEN_MAX       256
+#define GOODIX_FIRMWARE_FILE_NAME             "goodix_firmware.bin"
+#define GOODIX_CONFIG_FILE_NAME               "goodix_config.cfg"
+#define GOODIX_FIRMWARE_FILE_NAME_OFILM       "goodix_firmware_oflim.bin"
+#define GOODIX_CONFIG_FILE_NAME_OFILM         "goodix_config_oflim.cfg"
+#define GOODIX_FIRMWARE_FILE_NAME_HLT         "goodix_firmware_hlt.bin"
+#define GOODIX_CONFIG_FILE_NAME_HLT           "goodix_config_hlt.cfg"
+#define GOODIX_FIRMWARE_FILE_NAME_TRULY       "goodix_firmware_truly.bin"
+#define GOODIX_CONFIG_FILE_NAME_TRULY         "goodix_config_truly.cfg"
+#define GOODIX_FIRMWARE_FILE_NAME_HLT_CTL     "goodix_firmware_hlt_ctl.bin"
+#define GOODIX_CONFIG_FILE_NAME_HLT_CTL       "goodix_config_hlt_ctl.cfg"
+
+//enum {
+//    DEV_DRG_HLT13 = 0,
+//    DEV_DRG_HLT14,
+//    DEV_CTL_HLT13,
+//    DEV_CTL_HLT14
+//};
 
 #define FW_HEAD_LENGTH			14
 #define FW_SECTION_LENGTH		0x2000	/*  8K */
@@ -42,9 +57,9 @@
 #define FW_GLINK_LENGTH			0x3000	/*  12k */
 #define FW_GWAKE_LENGTH		(4 * FW_SECTION_LENGTH) /*  32k */
 
-#define DELAY_FOR_SENDCFG		500
-#define PACK_SIZE			256
-#define MAX_FRAME_CHECK_TIME		5
+#define PACK_SIZE           256
+#define MAX_FRAME_CHECK_TIME        5
+
 
 #define _bRW_MISCTL__SRAM_BANK		0x4048
 #define _bRW_MISCTL__MEM_CD_EN		0x4049
@@ -274,7 +289,7 @@ s32 gup_enter_update_mode(struct i2c_client *client)
 		dev_err(&ts->client->dev, "update failed, no rst pin\n");
 		return FAIL;
 	}
-	gtp_rst_output(ts, 0);
+    gpio_direction_output(ts->pdata->rst_gpio, 0);
 	usleep_range(2000, 3000);
 
 	/* step2:select I2C slave addr,INT:0--0xBA;1--0x28. */
@@ -282,7 +297,7 @@ s32 gup_enter_update_mode(struct i2c_client *client)
 	usleep_range(2000, 3000);
 
 	/* step3:RST output high reset guitar */
-	gtp_rst_output(ts, 1);
+    gpio_direction_output(ts->pdata->rst_gpio, 1);
 
 	/* 20121211 modify start */
 	usleep_range(5000, 6000);
@@ -373,15 +388,15 @@ static u8 gup_enter_update_judge(struct i2c_client *client,
 		fw_len += (((u32)fw_head->hw_info[1]) << 16);
 		fw_len += (((u32)fw_head->hw_info[0]) << 24);
 	}
-	if (update_msg.fw_total_len != fw_len) {
-		dev_err(&client->dev,
-			"Inconsistent firmware size, Update aborted!");
-		dev_err(&client->dev,
-			" Default size: %d(%dK), actual size: %d(%dK)",
-			fw_len, fw_len/1024, update_msg.fw_total_len,
-			update_msg.fw_total_len/1024);
-		return FAIL;
-	}
+    if (update_msg.fw_total_len != fw_len) {
+        dev_err(&client->dev,
+            "Inconsistent firmware size, Update aborted!");
+        dev_err(&client->dev,
+            " Default size: %d(%dK), actual size: %d(%dK)",
+            fw_len, fw_len/1024, update_msg.fw_total_len,
+            update_msg.fw_total_len/1024);
+        return FAIL;
+    }
 	dev_info(&client->dev, "Firmware length:%d(%dK)",
 		 update_msg.fw_total_len,
 		 update_msg.fw_total_len/1024);
@@ -430,7 +445,7 @@ static u8 gup_enter_update_judge(struct i2c_client *client,
 		dev_err(&client->dev, "File PID != Ic PID, update aborted!");
 	}
 
-	return FAIL;
+    return FAIL;
 }
 
 static int gup_update_config(struct i2c_client *client)
@@ -439,29 +454,59 @@ static int gup_update_config(struct i2c_client *client)
 	s32 i = 0;
 	s32 file_cfg_len = 0;
 	u8 *file_config;
+    u8 buf_a[8] = {GTP_REG_CONFIG_DATA >> 8, GTP_REG_CONFIG_DATA & 0xff};
 	const struct firmware *fw_cfg;
 
 	struct goodix_ts_data *ts = i2c_get_clientdata(client);
 
-	ret = request_firmware(&fw_cfg, GOODIX_CONFIG_FILE_NAME,
-			       &client->dev);
-	if (ret < 0) {
-		dev_err(&client->dev,
-			"Cannot get config file - %s (%d)\n",
-			GOODIX_CONFIG_FILE_NAME, ret);
-		return -EFAULT;
-	}
-	if (!fw_cfg || !fw_cfg->data || fw_cfg->size > PAGE_SIZE) {
-		dev_err(&client->dev, "config file illegal");
-		ret = -EFAULT;
-		goto cfg_fw_err;
-	}
+    ret = gtp_i2c_read(client, buf_a, sizeof(buf_a));
+    if (ret < 0)
+    {
+        dev_err(&client->dev, "GTP read version failed\n");
+        return -EFAULT;
+    }
+
+    if(ts->fw_info.sensor_id == OFILM_ID){
+        ret = request_firmware(&fw_cfg, GOODIX_CONFIG_FILE_NAME_OFILM,&client->dev);
+        pr_info("[FIH@touch] config file - %s \n",GOODIX_CONFIG_FILE_NAME_OFILM);
+    }else if(ts->fw_info.sensor_id == HLT_ID){
+        if( ts->pdata->devinfo == DEV_CTL_HLT14 ){
+            //CTL device 3 && CFG Version greater than 70
+            ret = request_firmware(&fw_cfg, GOODIX_CONFIG_FILE_NAME_HLT_CTL,&client->dev);
+            pr_info("[FIH@touch] config file - %s \n",GOODIX_CONFIG_FILE_NAME_HLT_CTL);
+        }else if( ts->pdata->devinfo == DEV_DRG_HLT14){
+            //DRG device 1 && CFG Version greater than 70
+            ret = request_firmware(&fw_cfg, GOODIX_CONFIG_FILE_NAME_HLT,&client->dev);
+            pr_info("[FIH@touch] config file - %s \n",GOODIX_CONFIG_FILE_NAME_HLT);
+        }else {
+             //DRG device 0 or CTL device 2 
+             pr_info("[FIH@touch] devinfo=%d, CFG V%d HLT ch13 do not upgrade \n",ts->pdata->devinfo,buf_a[2]);
+             return -EFAULT;
+        }
+    }else if(ts->fw_info.sensor_id == TRULY_ID){
+        ret = request_firmware(&fw_cfg, GOODIX_CONFIG_FILE_NAME_TRULY,&client->dev);
+        pr_info("[FIH@touch] config file - %s \n",GOODIX_CONFIG_FILE_NAME_TRULY);
+    }else {
+        pr_info("[FIH@touch] Wrong Sensor ID config file - %s \n",GOODIX_CONFIG_FILE_NAME);
+        ret = request_firmware(&fw_cfg, GOODIX_CONFIG_FILE_NAME,&client->dev);
+    }
+    if (ret < 0) {
+        dev_err(&client->dev,
+            "Cannot get config file - (%d)\n", ret);
+        return -EFAULT;
+    }
+    if (!fw_cfg || !fw_cfg->data || fw_cfg->size > PAGE_SIZE) {
+        dev_err(&client->dev, "config file illegal");
+        ret = -EFAULT;
+        goto cfg_fw_err;
+    }
 
 	dev_dbg(&client->dev, "config firmware file len:%zu", fw_cfg->size);
 
 	file_config = kzalloc(GTP_CONFIG_MAX_LENGTH + GTP_ADDR_LENGTH,
 			      GFP_KERNEL);
 	if (!file_config) {
+        dev_err(&ts->client->dev, "failed alloc memory");
 		ret = -ENOMEM;
 		goto cfg_fw_err;
 	}
@@ -482,7 +527,7 @@ static int gup_update_config(struct i2c_client *client)
 		ret = gtp_i2c_write(client, file_config, file_cfg_len + 2);
 		if (ret > 0) {
 			dev_info(&client->dev, "Send config SUCCESS.");
-			msleep(DELAY_FOR_SENDCFG);
+            msleep(500);
 			break;
 		}
 		dev_err(&ts->client->dev, "Send config i2c error.");
@@ -500,11 +545,26 @@ static u8 gup_check_firmware_name(struct i2c_client *client,
 {
 	u8 len;
 	u8 *fname;
+    struct goodix_ts_data *ts = i2c_get_clientdata(client);
 
-	if (!(*path_p)) {
-		*path_p = GOODIX_FIRMWARE_FILE_NAME;
-		return 0;
-	}
+    if (!(*path_p)) {
+        if(ts->fw_info.sensor_id == OFILM_ID)
+            *path_p = GOODIX_FIRMWARE_FILE_NAME_OFILM;
+        else if(ts->fw_info.sensor_id == HLT_ID){
+            if(ts->pdata->devinfo == DEV_CTL_HLT14){
+                *path_p = GOODIX_FIRMWARE_FILE_NAME_HLT_CTL;
+            }else if(ts->pdata->devinfo == DEV_DRG_HLT14){
+                *path_p = GOODIX_FIRMWARE_FILE_NAME_HLT;
+            }
+        }else if(ts->fw_info.sensor_id == TRULY_ID)
+             *path_p = GOODIX_FIRMWARE_FILE_NAME_TRULY;
+        else {
+            dev_err(&client->dev, "Wrong Sensor ID");
+            *path_p = GOODIX_FIRMWARE_FILE_NAME;
+        }
+        pr_info("[FIH@touch] firmware name %s!\n",*path_p);
+        return 0;
+    }
 
 	len = strnlen(*path_p, FIRMWARE_NAME_LEN_MAX);
 	if (len >= FIRMWARE_NAME_LEN_MAX) {
@@ -541,7 +601,7 @@ static u8 gup_get_update_file(struct i2c_client *client,
 
 	ret = request_firmware(&update_msg.fw, path, &client->dev);
 	if (ret < 0) {
-		dev_err(&client->dev, "Failed get firmware:%d\n", ret);
+        dev_err(&client->dev, "Failed get firmware@%s ret:%d\n", path, ret);
 		return FAIL;
 	}
 
@@ -663,13 +723,14 @@ static u8 gup_burn_proc(struct i2c_client *client, u8 *burn_buf,
 
 static u8 gup_load_section_file(u8 *buf, u32 offset, u16 length, u8 set_or_end)
 {
-	if (!update_msg.fw_data ||
-	    update_msg.fw_total_len < FW_HEAD_LENGTH + offset + length) {
-		pr_err("<<-GTP->> cannot load section data. fw_len=%d read end=%d\n",
-		update_msg.fw_total_len,
-		FW_HEAD_LENGTH + offset + length);
-		return FAIL;
-	}
+    if (!update_msg.fw_data ||
+        update_msg.fw_total_len < offset + length) {
+        dev_err(&i2c_connect_client->dev,
+            "cannot load section data. fw_len=%d read end=%d\n",
+            update_msg.fw_total_len,
+            FW_HEAD_LENGTH + offset + length);
+        return FAIL;
+    }
 
 	if (set_or_end == SEEK_SET) {
 		memcpy(buf, &update_msg.fw_data[FW_HEAD_LENGTH + offset],
@@ -1605,7 +1666,7 @@ static u8 gup_burn_fw_gwake_section(struct i2c_client *client,
 		return FAIL;
 	}
 	/* must delay */
-	usleep_range(1000, 2000);
+    usleep_range(5000, 6000);
 
 	/* step4:select bank */
 	ret = gup_set_ic_msg(
@@ -1946,6 +2007,7 @@ s32 gup_update_proc(void *dir)
 		if (ret == FAIL) {
 			dev_err(&ts->client->dev,
 				"[update_proc]Doesn't meet update condition\n");
+            ret = fih_gtp_read_version(ts->client, 0);
 			goto file_fail;
 		}
 	}
@@ -2048,6 +2110,7 @@ update_fail:
 			"firmware error auto update, resent config!\n");
 		gup_init_panel(ts);
 	}
+    ret = fih_gtp_read_version(ts->client, 0);
 	gtp_get_fw_info(ts->client, &ts->fw_info);
 
 file_fail:
@@ -2065,17 +2128,17 @@ file_fail:
 		show_len = 100;
 		clear_bit(FW_ERROR, &ts->flags);
 		return SUCCESS;
-	}
-
-	show_len = 200;
-	return FAIL;
+    } else {
+        show_len = 200;
+        return FAIL;
+    }
 }
 
 u8 gup_init_update_proc(struct goodix_ts_data *ts)
 {
 	struct task_struct *thread = NULL;
 
-	dev_info(&ts->client->dev, "Ready to run update thread.");
+    dev_err(&ts->client->dev, "Ready to run update thread.");
 
 	thread = kthread_run(gup_update_proc,
 			(void *)NULL, "guitar_update");
