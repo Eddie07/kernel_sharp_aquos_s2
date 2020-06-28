@@ -216,7 +216,9 @@ dtb-$(CONFIG_ARCH_MSMHAMSTER) += msmhamster-rumi.dtb
 dtb-$(CONFIG_SHARP_SDM630_SDM660_PROJS) += sdm630-mtp-ss2-dvt.dtb \
         sdm660-mtp-sat-dvt.dtb \
         sdm630-mtp-hh1-EU-DVT.dtb \
-	sdm630-mtp-ss2-dvt2.dtb
+	sdm630-mtp-ss2-dvt2.dtb \
+        sdm636-mtp-hd1-DVT.dtb
+
   #      sdm630-mtp-sg1-dvt.dtb
 
 #       sdm630-mtp-ss2-dvt2.dtb

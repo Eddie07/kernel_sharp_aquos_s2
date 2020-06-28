@@ -1,0 +1,63 @@
+/ {
+	/delete-node/ qcom,battery-data;
+	fih_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "fg-gen3-batterydata-scud-3000mah-100k-hd1.dtsi"
+	};
+};
+
+&usb3 {
+	dwc3@a800000 {
+		maximum-speed = "high-speed";
+	};
+};
+
+&pm660_fg {
+	qcom,battery-data = <&fih_batterydata>;
+	qcom,fg-cutoff-voltage = <3150>;
+	qcom,fg-empty-voltage = <3100>;
+	qcom,fg-vbatt-low-thr = <3200>;
+					qcom,fg-chg-term-current = <0x64>;
+					qcom,fg-sys-term-current = <0xffffff6a>;
+					qcom,fg-chg-term-base-current = <0x4b>;
+	qcom,fg-recharge-soc-thr = <99>;
+       qcom,fg-auto-recharge-soc;
+	qcom,linearize-soc;
+	qcom,hold-soc-while-full;
+	qcom,fg-jeita-thresholds = <0 1 45 55>;
+	qcom,fg-force-load-profile;
+	qcom,fg-recharge-voltage = <4250>;
+	qcom,battery-thermal-coefficients = [A3 50 ff];
+	qcom,fg-rsense-sel = <0>;
+};
+
+&pm660_charger {
+	/delete-property/ qcom,batteryless-platform;
+					qcom,fcc-max-ua = <0x1e8480>;
+					qcom,fv-max-uv = <0x432380>;
+					qcom,usb-icl-ua = <0x2dc6c0>;
+					qcom,auto-recharge-soc;
+					qcom,float-option = <0x1>;
+					qcom,step-charging-enable;
+					qcom,sw-jeita-enable;
+					qcom,step-fcc-cfg = <0x2dc6c0 0x401640 0x1e8480 0x401a28 0x432380 0x17a6b0>;
+					qcom,jeita-fcc-cfg = <0x0 0x9d 0x7a120 0x9e 0x1b8 0x1e8480 0x1b9 0x226 0x155cc0>;
+					qcom,jeita-fv-cfg = <0x0 0x9d 0x432380 0x9e 0x1b8 0x432380 0x1b9 0x226 0x3e8fa0>;
+					qcom,step-fcc-hysteresis = <0x4e20>;
+					qcom,jeita-fcc-fv-hysteresis = <0x6>;
+					qcom,dc-icl-ua = <0x10c8e0>;
+					qcom,disable-wipower;
+					fih,remove-health-over-voltage;
+					fih,update_battery_status = <0x1>;
+					fih,sdp-current-ua = <0x7a120>;
+					fih,hvdcp-current-ua = <0x16e360>;
+					fih,aicl-rerun;
+					qcom,hvdcp-disable;
+					qcom,micro-usb;
+};
+
+&i2c_2 {
+	smb1351-charger@1d {
+		status = "disabled";
+	};
+};

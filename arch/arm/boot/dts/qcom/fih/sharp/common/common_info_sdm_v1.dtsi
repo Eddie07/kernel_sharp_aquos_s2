@@ -10,6 +10,6 @@
 			ftm_charger_cur_path = "/sys/class/power_supply/battery/input_current_max";
 			ftm_charger_path = "/sys/class/power_supply/battery/charging_enabled";
 			acdbdir="SS2";
-                        adspinfo="BBBS";
+                        adspinfo="BMBS";
       };
 };

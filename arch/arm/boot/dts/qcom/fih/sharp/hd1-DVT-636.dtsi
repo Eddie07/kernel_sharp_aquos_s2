@@ -1,0 +1,68 @@
+/* DRG preEVT SDM636 */
+
+/* MemMap parts */
+#include "../common/memmap-evb.dtsi"
+
+/* Common DT Info */
+#include "common/common_info_sdm_v3.dtsi"
+
+/* SYSTEM parts */
+#include "common/system-preEVT-630-hd1.dtsi"
+
+/* External LDO control */
+//#include "ext-reguator/fixed-regulator-EVT-v1.dtsi"
+
+/* Keypad parts */
+#include "misc/keypad.dtsi"
+
+/* PMIC parts */
+
+/* GPIO parts */
+
+/* Peripheral */
+
+/* Charging */
+#include "charger/charger-evt1-hd1.dtsi"
+//#include "charger/drg-setting.dtsi"
+
+/* Audio */
+#include "audio/sdm660-internal-codec-hd1.dtsi"
+
+/* Camera */
+#include "camera/camera-HD1.dtsi"
+
+/* Haptic */
+#include "misc/haptics-hal1.1_HD1.dtsi"
+
+/*Leds*/
+#include "leds/heineken_leds_rgb_hd1.dtsi"
+
+/* SD */
+#include "misc/sd-evb.dtsi"
+
+/* Fingerprint */
+//#include "fingerprint/fingerprint-gf3208-evt-b2n.dtsi"
+#include "fingerprint/fingerprint-microarray.dtsi"
+
+/* Sensor */
+/* NO HALL Sensor */
+
+/* Touch */
+/* SW4-HL-TP-BringUpGT915L-00*_20180119 */
+
+/* USB */
+#include "usb/microUSB_nd1.dtsi"
+
+/*Touch*/
+
+#include "touch/himax.dtsi"
+
+/* LCM */
+/* SW4-HL-Display-himax8399 */
+#include "display/dsi-panel-hx8399c-fhd-plus-video-hd1.dtsi"
+
+/* My mulivendor */
+#include "misc/multivendor.dtsi"
+
+
+

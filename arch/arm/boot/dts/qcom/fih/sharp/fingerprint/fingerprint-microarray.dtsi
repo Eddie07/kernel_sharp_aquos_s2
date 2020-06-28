@@ -1,0 +1,13 @@
+&soc {
+		microarray_fp {
+			status = "ok";
+			compatible = "microarray,fingerprint";
+			interrupt-parent = <&tlmm>;
+			interrupts = <0x0 0x48 0x0>;
+			spi-max-frequency = <0x493e00>;
+			microarray,gpio_reset = <&tlmm 0x14 0x0>;
+			microarray,gpio_irq = <&tlmm 0x48 0x0>;
+			microarray,gpio_pwr = <&tlmm 0x3e 0x0>;
+	};
+};
+		

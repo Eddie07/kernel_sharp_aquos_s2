@@ -1,0 +1,104 @@
+/* Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+&mdss_mdp {
+	fih_dsi_himax8399_video_hd1: qcom,mdss_dsi_himax8399_video_hd1 {
+					fih,panel-id = <0x10>;
+				qcom,mdss-dsi-panel-name = "himax8399 video mode dsi panel hd1 without DSC";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-panel-framerate = <0x3c>;
+				qcom,mdss-dsi-virtual-channel-id = <0x0>;
+				qcom,mdss-dsi-stream = <0x0>;
+				qcom,mdss-dsi-panel-width = <0x438>;
+				qcom,mdss-dsi-panel-height = <0x8e8>;
+				qcom,mdss-dsi-h-front-porch = <0x20>;
+				qcom,mdss-dsi-h-back-porch = <0x5a>;
+				qcom,mdss-dsi-h-pulse-width = <0x4>;
+				qcom,mdss-dsi-h-sync-skew = <0x0>;
+				qcom,mdss-dsi-v-back-porch = <0x10>;
+				qcom,mdss-dsi-v-front-porch = <0x10>;
+				qcom,mdss-dsi-v-pulse-width = <0x2>;
+				qcom,mdss-dsi-h-left-border = <0x0>;
+				qcom,mdss-dsi-h-right-border = <0x0>;
+				qcom,mdss-dsi-v-top-border = <0x0>;
+				qcom,mdss-dsi-v-bottom-border = <0x0>;
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-underflow-color = <0xff>;
+				qcom,mdss-dsi-border-color = <0x0>;
+				qcom,mdss-dsi-on-command = [39 01 00 00 00 00 04 b9 ff 83 99 05 01 00 00 78 00 02 11 00 
+				05 01 00 00 32 00 02 29 00 
+				29 01 00 00 00 00 02 53 24];
+				qcom,mdss-dsi-off-command = [05 01 00 00 14 00 02 28 00 05 01 00 00 78 00 02 10 00];
+				qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
+				qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-h-sync-pulse = <0x0>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-bllp-eof-power-mode;
+				qcom,mdss-dsi-bllp-power-mode;
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-t-clk-post = <0x2>;
+				qcom,mdss-dsi-t-clk-pre = <0x32>;
+				qcom,mdss-dsi-dma-trigger = "trigger_sw";
+				qcom,mdss-dsi-mdp-trigger = "none";
+				qcom,mdss-dsi-reset-sequence = <0x1 0xa 0x0 0xf 0x1 0x14>;
+				qcom,mdss-dsi-panel-hdr-enabled;
+				qcom,mdss-dsi-panel-hdr-color-primaries = <14500 15500 32000
+			17000 15500 30000 8000 3000>;
+				qcom,mdss-dsi-panel-peak-brightness = <4200000>;
+                		qcom,mdss-dsi-panel-blackness-level = <3230>;
+	};
+};
+
+&fih_dsi_himax8399_video_hd1  {
+       qcom,mdss-dsi-panel-timings-phy-v2 = <0x2520090a 0x60304a0 0x2520090a 0x60304a0 0x2520090a 0x60304a0 0x2520090a 0x60304a0 0x251f080a 0x60304a0>;
+	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
+	//qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
+//	qcom,mdss-dsi-bl-dcs-command-state = "dsi_hs_mode";
+	qcom,mdss-dsi-bl-min-level = <1>;
+	qcom,mdss-dsi-bl-max-level = <0xfff>;
+	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
+};
+
+&mdss_dsi {
+	hw-config = "single_dsi";
+};
+
+
+&mdss_dsi1 {
+	status = "disabled";
+};
+
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&fih_dsi_himax8399_video_hd1>;
+	pinctrl-names = "mdss_default", "mdss_sleep";
+	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+	qcom,platform-reset-gpio = <&tlmm 53 0>;
+	qcom,platform-te-gpio = <&tlmm 59 0>;
+     // qcom,platform-bklight-en-gpio = <&tlmm 75 0x0>;
+	//qcom,platform-bklight-en-gpio-invert;
+	fih,tp-reset-gpio = <&tlmm 66 0>;
+      	qcom,mdss-dsi-min-refresh-rate = <55>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
+};
+
+
+
+&pm660l_wled {
+	qcom,fs-curr-ua = <20000>;
+	qcom,led-strings-list = [00 01];	/* 5S3P  */
+};
+

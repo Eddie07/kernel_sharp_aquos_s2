@@ -1,0 +1,18 @@
+
+&i2c_4 {
+	status = "okay";
+	himax-ts@48 {
+		compatible = "himax,hxcommon";
+		reg = <0x48>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <67 0x02>;
+		himax,rst-gpio = <&tlmm 66 0x01>;
+		himax,irq-gpio = <&tlmm 67 0x02>;
+				vdd_ana-supply = <&pm660l_l6>;
+				vcc_i2c-supply = <&pm660_l13>;
+				himax,display-coords = <0x0 0x438 0x0 0x8e8>;
+				himax,panel-coords = <0x0 0x438 0x0 0x8e8>;
+		report_type = <1>;
+	};
+};
+

@@ -1,0 +1,34 @@
+&red_led {
+	qcom,start-idx = <1>;
+	qcom,idx-len = <10>;
+	qcom,duty-pcts = [00 19 32 4B 64 64 4B 32 19 00];
+	qcom,lut-flags = <19>;
+	qcom,pause-lo = <5000>;
+	qcom,pause-hi = <0>;
+	qcom,ramp-step-ms = <128>;
+	qcom,use-blink;
+};
+
+&green_led {
+	qcom,start-idx = <1>;
+	qcom,idx-len = <10>;
+	qcom,duty-pcts = [00 19 32 4B 64 64 4B 32 19 00];
+	qcom,lut-flags = <19>;
+	qcom,pause-lo = <5000>;
+	qcom,pause-hi = <0>;
+	qcom,ramp-step-ms = <128>;
+	qcom,use-blink;
+};
+
+&blue_led {
+
+	qcom,start-idx = <1>;
+	qcom,idx-len = <10>;
+	qcom,duty-pcts = [00 19 32 4B 64 64 4B 32 19 00];
+	qcom,lut-flags = <19>;
+	qcom,pause-lo = <5000>;
+	qcom,pause-hi = <0>;
+	qcom,ramp-step-ms = <128>;
+	qcom,use-blink;
+
+};
