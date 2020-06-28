@@ -289,8 +289,10 @@ static int fts_input_dev_init( struct i2c_client *client, struct fts_ts_data *da
 {
     int  err, len;
 	
-//	int ret = 0;
 	struct proc_dir_entry *prEntry_tmp  = NULL;
+	
+//	int ret = 0;
+
 	prEntry_tp = proc_mkdir("touchpanel", NULL);
 	if( prEntry_tp == NULL ){
 	//	ret = -ENOMEM;
@@ -1578,6 +1580,11 @@ static int fts_ts_suspend(struct device *dev)
 FTS_ERROR("[SUSPEND]Goind Suspend");
     if (gdouble_tap_enable) {
 	FTS_ERROR("[SUSPEND]Goind Suspend dt enabled");
+
+/* Heineken -fixes some faults on failed ts */    
+ fts_reset_proc(200);
+/* Heineken -fixes some faults on failed ts */
+   
     retval = fts_gesture_suspend(data->client);
     if (retval == 0)
     {
@@ -1745,6 +1752,12 @@ static int __init fts_ts_init(void)
                 return 0;
         }
     }
+	/* FIH model check. Do nnot use driver anycase f model is SG1, HD1, DRG */
+
+	if((strstr(saved_command_line, "androidboot.device=SG1"))|| 
+	(strstr(saved_command_line, "androidboot.device=HD1"))||(strstr(saved_command_line, "androidboot.device=DRG"))) return 0;
+
+	/* FIH model check. Do nnot use driver anycase f model is SG1, HD1, DRG */
 
     FTS_FUNC_ENTER();
     ret = i2c_add_driver(&fts_ts_driver);
