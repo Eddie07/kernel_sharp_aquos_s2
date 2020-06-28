@@ -157,6 +157,10 @@
 		qcom,mdss-dsi-cabc-ui-command-BeforeInit-state = "dsi_lp_mode";
 		qcom,mdss-dsi-cabc-still-command-BeforeInit-state = "dsi_lp_mode";
 		qcom,mdss-dsi-cabc-moving-command-BeforeInit-state = "dsi_lp_mode";
+				qcom,mdss-dsi-panel-hdr-enabled;
+				qcom,mdss-dsi-panel-hdr-color-primaries = <14500 15500 32000 17000 15500 30000 8000 3000>;
+				qcom,mdss-dsi-panel-peak-brightness = <4200000>;
+                		qcom,mdss-dsi-panel-blackness-level = <3230>;
 
 		//fih,default-cabc-mode = <2>;
 	};
@@ -172,7 +176,7 @@
 	];
 	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_wled";
 	qcom,mdss-dsi-bl-min-level = <1>;
-	qcom,mdss-dsi-bl-max-level = <4095>;
+	qcom,mdss-dsi-bl-max-level = <0xfff>;
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 };
 
@@ -201,6 +205,10 @@
 	qcom,platform-reset-gpio = <&tlmm 53 0>;
 	qcom,platform-te-gpio = <&tlmm 59 0>;
         wqhd-vddio-supply = <&pm660_l18>;
+	fih,tp-reset-gpio = <&tlmm 66 0>;
+      	qcom,mdss-dsi-min-refresh-rate = <55>;
+	qcom,mdss-dsi-max-refresh-rate = <60>;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
 };
 
 &soc {
