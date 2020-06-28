@@ -23,12 +23,15 @@
 	qcom,fg-chg-term-base-current = <75>;	/* 100mA - 25mA */
 	qcom,fg-recharge-soc-thr = <99>;
        qcom,fg-auto-recharge-soc;
-	qcom,fg-jeita-thresholds = <0 1 50 58>;
 	qcom,linearize-soc;
+	qcom,cycle-counter-en;
 	qcom,hold-soc-while-full;
+	qcom,fg-jeita-thresholds = <5 10 45 55>;
+		qcom,slope-limit-temp-threshold = <100>;
+	qcom,slope-limit-coeffs = <1 1 1 1>;
 	qcom,fg-force-load-profile;
 	qcom,fg-recharge-voltage = <4250>;
-	qcom,battery-thermal-coefficients = [A3 50 ff];
+	qcom,battery-thermal-coefficients = [c7 50 ff];
 	qcom,fg-rsense-sel = <0>;
 };
 
