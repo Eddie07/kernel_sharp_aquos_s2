@@ -31,6 +31,7 @@
 #include <linux/debugfs.h>
 #include <linux/version.h>
 #include <linux/input.h>
+#include <linux/proc_fs.h>
 #include "inc/config.h"
 #include "inc/tfa98xx.h"
 #include "inc/tfa.h"
@@ -61,6 +62,7 @@
 #define SMARTAMP_PROBE_FAIL  do {printk("BBox;%s: SmartAmp probe fail\n", __func__); printk("BBox::UEC;50::1\n");} while (0)
 #define SMARTAMP_BUS_READ_FAIL  do {printk("BBox;%s: SmartAmp I2C read fail\n", __func__); printk("BBox::UEC;50::2\n");} while (0)
 #define SMARTAMP_BUS_WRITE_FAIL  do {printk("BBox;%s: SmartAmp I2C write fail\n", __func__); printk("BBox::UEC;50::3\n");} while (0)
+#define TFA_NODE "tfa_mode"
 
 /* data accessible by all instances */
 static struct kmem_cache *tfa98xx_cache = NULL;  /* Memory pool used for DSP messages */
@@ -74,6 +76,10 @@ static int tfa98xx_mixer_profiles = 0; /* number of user selectable profiles */
 static int tfa98xx_mixer_profile = 0;  /* current mixer profile */
 static struct snd_kcontrol_new *tfa98xx_controls;
 static nxpTfaContainer_t *tfa98xx_container = NULL;
+
+//Enable proc for switch init mode 5 =NULL
+int tfa_enable=5;
+
 
 static int tfa98xx_kmsg_regs = 0;
 static int tfa98xx_ftrace_regs = 0;
@@ -131,6 +137,37 @@ static const struct tfa98xx_rate rate_to_fssel[] = {
 };
 
 
+
+static int tfa_data_read_show(struct seq_file *m, void *v)
+{
+
+		pr_info("TFA Read  Result\n");
+		seq_printf(m, "%d\n", tfa_enable);
+
+	return 0;
+}
+static int tfa_data_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, tfa_data_read_show, NULL);
+};
+
+static ssize_t tfa_data_write(struct file *filp, const char __user * buff, size_t len, loff_t * off)
+{
+  	int input;
+	char buf[50];
+		if(copy_from_user(buf,buff,len))
+		return -EINVAL;
+	if (sscanf(buf, "%u", &input) != 1)
+	{
+		 return -EINVAL;
+	}
+
+		pr_info("TFA mode=%d\n",input);
+		tfa_enable=input;
+
+
+	return len;
+}
 static inline char *tfa_cont_profile_name(struct tfa98xx *tfa98xx, int prof_idx)
 {
 	if (tfa98xx->tfa->cnt == NULL)
@@ -162,7 +199,6 @@ static enum tfa_error tfa98xx_tfa_start(struct tfa98xx *tfa98xx, int next_profil
 	enum tfa_error err;
 	ktime_t start_time, stop_time;
 	u64 delta_time;
-
 	if (trace_level & 8) {
 		start_time = ktime_get_boottime();
 	}
@@ -471,6 +507,7 @@ static ssize_t tfa98xx_dbgfs_start_set(struct file *file,
 	char buf[32];
 	const char ref[] = "please calibrate now";
 	int buf_size;
+	
 
 	/* check string length, and account for eol */
 	if (count > sizeof(ref) + 1 || count < (sizeof(ref) - 1))
@@ -1177,6 +1214,7 @@ static int tfa98xx_set_profile(struct snd_kcontrol *kcontrol,
 		return 0;
 
 	new_profile = ucontrol->value.integer.value[0];
+
 	if (new_profile == profile)
 		return 0;
 
@@ -2504,6 +2542,9 @@ static int tfa98xx_hw_params(struct snd_pcm_substream *substream,
 
 	if (no_start != 0)
 		return 0;
+//Here we change mixer profile from proc
+if (tfa_enable <5) tfa98xx_mixer_profile=tfa_enable;	
+
 
 	/* check if samplerate is supported for this mixer profile */
 	prof_idx = get_profile_id_for_sr(tfa98xx_mixer_profile, rate);
@@ -3177,9 +3218,24 @@ static struct i2c_driver tfa98xx_i2c_driver = {
 	.id_table = tfa98xx_i2c_id,
 };
 
+static const struct file_operations tfa_fops = {
+	.owner = THIS_MODULE,
+	.read    = seq_read,
+	.open    = tfa_data_open,
+	.write = tfa_data_write,
+	.llseek  = seq_lseek,
+	.release = single_release
+};
+
 static int __init tfa98xx_i2c_init(void)
 {
 	int ret = 0;
+			/*control path*/
+struct proc_dir_entry *proc_entry = NULL;
+	
+
+	proc_entry = proc_create(TFA_NODE, 0666, NULL, &tfa_fops);
+/*control path*/
 
 	pr_err("tfa98xx driver version %s\n", TFA98XX_VERSION);
         if(strstr(saved_command_line, "androidboot.device=PL2"))
