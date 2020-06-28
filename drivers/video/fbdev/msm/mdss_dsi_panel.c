@@ -217,10 +217,19 @@ static void mdss_dsi_panel_cmds_send(struct mdss_dsi_ctrl_pdata *ctrl,
 }
 
 static char led_pwm1[2] = {0x51, 0x0};	/* DTYPE_DCS_WRITE1 */
+	/* Sharp HD1 case */
+static char led_pwm1_hd1[3] = {0x51, 0x20, 0x20};	/* DTYPE_DCS_LWRITE */
+	/* Sharp HD1 case */
 static struct dsi_cmd_desc backlight_cmd = {
 	{DTYPE_DCS_WRITE1, 1, 0, 0, 1, sizeof(led_pwm1)},
 	led_pwm1
 };
+	/* Sharp HD1 case */
+static struct dsi_cmd_desc backlight_cmd_hd1 = {
+	{DTYPE_DCS_LWRITE1, 1, 0, 0, 1, sizeof(led_pwm1_hd1)},
+	led_pwm1_hd1
+};
+	/* Sharp HD1 case */
 
 static void mdss_dsi_panel_bklt_dcs(struct mdss_dsi_ctrl_pdata *ctrl, int level)
 {
@@ -236,9 +245,17 @@ static void mdss_dsi_panel_bklt_dcs(struct mdss_dsi_ctrl_pdata *ctrl, int level)
 	pr_debug("%s: level=%d\n", __func__, level);
 
 	led_pwm1[1] = (unsigned char)level;
-
+	/* Sharp HD1 case */
+	led_pwm1_hd1[2] = (unsigned char)  (level & 0xFF);
+    led_pwm1_hd1[1] = (unsigned char)  ((level >> 8) & 0xFF);
+	/* Sharp HD1 case */
 	memset(&cmdreq, 0, sizeof(cmdreq));
+		/* Sharp HD1 case */
+	if((strstr(saved_command_line, "androidboot.device=HD1"))
+	cmdreq.cmds = &backlight_cmd_hd1
+	else
 	cmdreq.cmds = &backlight_cmd;
+		/* Sharp HD1 case */
 	cmdreq.cmds_cnt = 1;
 	cmdreq.flags = CMD_REQ_COMMIT | CMD_CLK_CTRL;
 	cmdreq.rlen = 0;
