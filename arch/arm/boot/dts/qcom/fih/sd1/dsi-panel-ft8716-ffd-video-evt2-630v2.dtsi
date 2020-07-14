@@ -63,9 +63,6 @@
 			// DGAMMA OFF
 			29 00 00 00 00 00 02 00 A0
 			29 01 00 00 00 00 02 D7 05
-			// Typical White Point
-			29 00 00 00 00 00 02 00 00
-			29 01 00 00 00 00 02 94 00
 			// CE
 			29 00 00 00 00 00 02 00 A0
 			29 01 00 00 00 00 0D D6 0F 0D 0E 0B 0E 0B 0F 11 16 16 13 12
@@ -75,9 +72,9 @@
 			29 01 00 00 00 00 0D D6 A0 8D D4 CE CE C6 9D AB C3 C5 CF CA
 			29 00 00 00 00 00 02 00 D0
 			29 01 00 00 00 00 0D D6 91 83 AA A7 A7 A3 8E 96 A1 A2 A7 A5
-			// CE off
+			// Typical White Point
 			29 00 00 00 00 00 02 00 00
-			29 01 00 00 00 00 03 91 00 00
+			29 01 00 00 00 00 02 94 00
 			/* C590H  - power control setting */
 			29 00 00 00 00 00 02 00 90
 			29 01 00 00 00 00 0B C5 44 24 14 C0 88 00 2E 37 55 50
@@ -100,11 +97,42 @@
 			15 01 00 00 00 00 02 53 2C
 			15 01 00 00 00 00 03 51 FF 03
 		];
+
+		cm,mdss-livedisplay-color-enhance-on = [
+		        // Enable CMD2
+			29 00 00 00 00 00 04 FF 87 16 01
+			29 00 00 00 00 00 02 00 80
+			29 01 00 00 00 00 03 FF 87 16
+			// CE on
+			29 00 00 00 00 00 02 00 00
+			29 01 00 00 00 00 03 91 80
+			// Disable CMD2
+			29 00 00 00 00 00 02 00 00
+			29 00 00 00 00 00 04 FF 00 00 00
+			29 00 00 00 00 00 02 00 80
+			29 01 00 00 00 00 03 FF 00 00
+		];
+		cm,mdss-livedisplay-color-enhance-off = [
+		        // Enable CMD2
+			29 00 00 00 00 00 04 FF 87 16 01
+			29 00 00 00 00 00 02 00 80
+			29 01 00 00 00 00 03 FF 87 16
+			// CE off
+			29 00 00 00 00 00 02 00 00
+			29 01 00 00 00 00 03 91 00
+			// Disable CMD2
+			29 00 00 00 00 00 02 00 00
+			29 00 00 00 00 00 04 FF 00 00 00
+			29 00 00 00 00 00 02 00 80
+			29 01 00 00 00 00 03 FF 00 00		
+		];
+
+    
 		qcom,mdss-dsi-off-command = [
 			05 01 00 00 14 00 02 28 00
 			05 01 00 00 78 00 02 10 00
 		];
-		qcom,mdss-dsi-ct-normal-command = [
+			cm,mdss-livedisplay-preset-1 = [
 			// Enable CMD2
 			29 00 00 00 00 00 04 FF 87 16 01
 			29 00 00 00 00 00 02 00 80
@@ -122,7 +150,7 @@
 			29 01 00 00 00 00 03 FF 00 00
 		];
 
-		qcom,mdss-dsi-ct-warm-command = [
+			cm,mdss-livedisplay-preset-2 = [
 			// Enable CMD2
 			29 00 00 00 00 00 04 FF 87 16 01
 			29 00 00 00 00 00 02 00 80
@@ -146,7 +174,7 @@
 				39 00 00 00 00 00 02 96 00
 		];
 
-		qcom,mdss-dsi-ct-cold-command = [
+			cm,mdss-livedisplay-preset-3 = [
 			// Enable CMD2
 			29 00 00 00 00 00 04 FF 87 16 01
 			29 00 00 00 00 00 02 00 80
@@ -164,61 +192,7 @@
 			29 01 00 00 00 00 03 FF 00 00
 		];
 
-		qcom,mdss-dsi-blf-10-command = [
-			// Enable CMD2
-			29 00 00 00 00 00 04 FF 87 16 01
-			29 00 00 00 00 00 02 00 80
-			29 01 00 00 00 00 03 FF 87 16
-			// Gamma Channel
-			29 00 00 00 00 00 02 00 A0
-			29 01 00 00 00 00 02 D7 05
-			// Select White Point
-			29 00 00 00 00 00 02 00 00
-			29 01 00 00 00 00 02 94 C8
-			// Disable CMD2
-			29 00 00 00 00 00 02 00 00
-			29 00 00 00 00 00 04 FF 00 00 00
-			29 00 00 00 00 00 02 00 80
-			29 01 00 00 00 00 03 FF 00 00
-		];
-
-		qcom,mdss-dsi-blf-30-command = [
-			// Enable CMD2
-			29 00 00 00 00 00 04 FF 87 16 01
-			29 00 00 00 00 00 02 00 80
-			29 01 00 00 00 00 03 FF 87 16
-			// Gamma Channel
-			29 00 00 00 00 00 02 00 A0
-			29 01 00 00 00 00 02 D7 05
-			// Select White Point
-			29 00 00 00 00 00 02 00 00
-			29 01 00 00 00 00 02 94 D7
-			// Disable CMD2
-			29 00 00 00 00 00 02 00 00
-			29 00 00 00 00 00 04 FF 00 00 00
-			29 00 00 00 00 00 02 00 80
-			29 01 00 00 00 00 03 FF 00 00
-		];
-
-		qcom,mdss-dsi-blf-50-command = [
-			// Enable CMD2
-			29 00 00 00 00 00 04 FF 87 16 01
-			29 00 00 00 00 00 02 00 80
-			29 01 00 00 00 00 03 FF 87 16
-			// Gamma Channel
-			29 00 00 00 00 00 02 00 A0
-			29 01 00 00 00 00 02 D7 05
-			// Select White Point
-			29 00 00 00 00 00 02 00 00
-			29 01 00 00 00 00 02 94 F0
-			// Disable CMD2
-			29 00 00 00 00 00 02 00 00
-			29 00 00 00 00 00 04 FF 00 00 00
-			29 00 00 00 00 00 02 00 80
-			29 01 00 00 00 00 03 FF 00 00
-		];
-
-		qcom,mdss-dsi-blf-75-command = [
+			cm,mdss-livedisplay-preset-4 = [
 			// Enable CMD2
 			29 00 00 00 00 00 04 FF 87 16 01
 			29 00 00 00 00 00 02 00 80
@@ -282,7 +256,20 @@
 		qcom,mdss-dsi-cabc-moving-command-BeforeInit = [
 			39 01 00 00 00 00 02 55 03
 		];
-
+		cm,mdss-livedisplay-cabc-cmd = [39 01 00 00 00 00 02 55 00];
+		cm,mdss-livedisplay-cabc-ui-value = <0x01>;
+		cm,mdss-livedisplay-cabc-image-value = <0x02>;
+		cm,mdss-livedisplay-cabc-video-value = <0x03>;
+				cm,mdss-livedisplay-sre-weak-value = <0x50>;
+		cm,mdss-livedisplay-sre-medium-value = <0x60>;
+		cm,mdss-livedisplay-sre-strong-value = <0x70>;
+		cm,mdss-livedisplay-aco-value = <0x80>;
+		cm,mdss-livedisplay-hbm-on-cmd = [
+			05 01 00 00 00 00 02 53 E0];
+		cm,mdss-livedisplay-hbm-off-cmd = [
+			05 01 00 00 00 00 02 53 20];
+		cm,mdss-livedisplay-post-cmd = [
+			05 01 00 00 10 00 02 29 00];
 		qcom,mdss-dsi-cabc-off-command-BeforeInit-state = "dsi_lp_mode";
 		qcom,mdss-dsi-cabc-ui-command-BeforeInit-state = "dsi_lp_mode";
 		qcom,mdss-dsi-cabc-still-command-BeforeInit-state = "dsi_lp_mode";
@@ -339,6 +326,9 @@
 		qcom,mdss-pan-physical-width-dimension = <68>;
 		qcom,mdss-pan-physical-height-dimension = <136>;
 		qcom,adjust-timer-wakeup-ms = <1>;
+		qcom,mdss-dsi-pan-enable-dynamic-bitclk;
+		qcom,mdss-dsi-dynamic-bitclk_freq = <798240576 801594528 804948480
+		808302432 811656384>;
 		qcom,mdss-dsi-panel-hdr-enabled;
 		qcom,mdss-dsi-panel-hdr-color-primaries = <14500 15500 32000
 			17000 15500 30000 8000 3000>;
@@ -348,6 +338,7 @@ qcom,mdss-dsi-panel-blackness-level = <3230>;
 		qcom,dispparam-enabled;
 		qcom,mdss-night-brightness = <7 25 43 61>;
 		qcom,suspend-ulps-enabled;
+		qcom,ulps-enabled;
 	};
 };
 
@@ -364,7 +355,7 @@ qcom,mdss-dsi-panel-blackness-level = <3230>;
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 	qcom,mdss-dsi-min-refresh-rate = <53>;
 	qcom,mdss-dsi-max-refresh-rate = <60>;
-//	qcom,mdss-dsi-pan-enable-dynamic-fps;
+	qcom,mdss-dsi-pan-enable-dynamic-fps;
  //       qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
 };
 
@@ -436,4 +427,5 @@ qcom,mdss-dsi-panel-blackness-level = <3230>;
 &pm660l_lcdb {
 	qcom,lcdb-pwrup-pwrdn-ctl-override;
 	qcom,lcdb-pwrup-pwrdn-ctl = /bits/ 8 <0x0C>;
+	qcom,en-cabc;
 };
