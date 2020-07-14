@@ -30,15 +30,6 @@
 		qcom,switch-source = <&pm660l_switch1>;
 		status = "ok";
 	};
-	tlmm: pinctrl@03000000 {
-		compatible = "qcom,sdm660-pinctrl";
-		reg = <0x03000000 0xc00000>;
-		interrupts = <0 208 0>;
-		gpio-controller;
-		#gpio-cells = <2>;
-		interrupt-controller;
-		#interrupt-cells = <2>;
-	};
 
 	rear_cam_avdd_gpio_regulator: rear_cam_avdd_fixed_regulator {
 		compatible = "regulator-fixed";
