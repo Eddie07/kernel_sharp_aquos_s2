@@ -498,7 +498,8 @@ static int is_ext_spk_gpio_support(struct platform_device *pdev,
 	pdata->spk_ext_pa_gpio = of_get_named_gpio(pdev->dev.of_node,
 				spk_ext_pa, 0);
 #ifdef CONFIG_SND_SOC_AW87319
-if (strstr(saved_command_line, "androidboot.device=SG1")) return 0;
+	if((strstr(saved_command_line, "androidboot.device=SG1"))|| 
+	(strstr(saved_command_line, "androidboot.device=HD1"))) return 0;
 #endif
 	if (pdata->spk_ext_pa_gpio < 0) {
 		dev_dbg(&pdev->dev,
@@ -521,13 +522,17 @@ static int enable_spk_ext_pa(struct snd_soc_codec *codec, int enable)
 
 #ifdef CONFIG_SND_SOC_AW87319
 
-	if(strstr(saved_command_line, "androidboot.device=SG1")) {	
+	if((strstr(saved_command_line, "androidboot.device=SG1"))|| 
+	(strstr(saved_command_line, "androidboot.device=HD1"))){	
               if (enable)
+			  { pr_err("Enable PA \n");
 			aw87319_audio_pa_speaker_on();
-		else
+			}
+		else { pr_err("Disable PA \n");
 			aw87319_audio_pa_off();
+			}
 		return 0;
-                 }
+                }
 #endif
 
 	if (!gpio_is_valid(pdata->spk_ext_pa_gpio)) {
@@ -1382,6 +1387,7 @@ static int msm_audrx_init(struct snd_soc_pcm_runtime *rtd)
 			__func__, ret);
 		return ret;
 	}
+//	aw87319_audio_pa_speaker_on();
 	ret = snd_soc_add_codec_controls(ana_cdc, msm_common_snd_controls,
 				   msm_common_snd_controls_size());
 	if (ret < 0) {

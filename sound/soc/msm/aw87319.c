@@ -374,7 +374,8 @@ static int AW87319_i2c_probe(struct i2c_client *client, const struct i2c_device_
 	int ret = 0;
 	printk("%s Enter\n", __func__);
 
-     if(!strstr(saved_command_line, "androidboot.device=SG1")) goto exit_check_functionality_failed;
+ //    if((!strstr(saved_command_line, "androidboot.device=SG1"))||
+//	 (!strstr(saved_command_line, "androidboot.device=HD1"))) goto exit_check_functionality_failed;
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		err = -ENODEV;
@@ -422,6 +423,7 @@ static int AW87319_i2c_probe(struct i2c_client *client, const struct i2c_device_
 	if(!cnt)
 	{
 		err = -ENODEV;
+		printk("AW87319 NOT FOUND\n");
 		aw87319_hw_off();
 		goto exit_create_singlethread;
 	}
