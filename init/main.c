@@ -509,7 +509,7 @@ asmlinkage __visible void __init start_kernel(void)
     char word2[] = "\"/dev/mmcblk0p";
 //keymaster hack date only for supporting device, SAT uses depreciated version
 char *keymaster_fake[4] = {"HH1", "HH6", "DRG", "HD1"};
-char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-06-05";
+char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-07-05";
 //ADD VERITY KEY FOR USAGE WITH STOCK ROMS
 char *word3[13] = {"SS2", "SAT", "C10", "HH1", "SG1", "SD1", "HH6", "HD1", "B2N", "C1N", "CTL", "DRG", "PL2"};
 char *strnokia = " veritykeyid=id:8f56f02c61394639f13af4e8cfe02d087e41b936";
