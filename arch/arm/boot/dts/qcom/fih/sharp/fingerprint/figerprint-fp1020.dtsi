@@ -13,8 +13,16 @@
 /*
  * SS2-fingerprint: fingerprint config
  */
+ &soc {
+	tlmm: pinctrl@03000000 {
+		compatible = "qcom,sdm660-pinctrl";
+		reg = <0x03000000 0xc00000>;
+		interrupts = <0 208 0>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
 
-&tlmm {
     fpc1020_reset_reset: fpc_fp_reset_gpio20_default {
         
             mux {
@@ -63,7 +71,6 @@
  
 };
 
-&soc {
     fpc1020 {
             compatible = "fpc,fpc1020";
             status = "ok";
