@@ -37,7 +37,9 @@
 #include "fingerprint/figerprint-fp1020.dtsi"
 
 /* Sensor */
-#include "sensors/hallsensor-ah1902-evb.dtsi"
+// #include "sensors/hallsensor-ah1902-evb.dtsi"
+ #include "sensors/hallsensor-fih.dtsi"
+//#include "sensors/hallsensor-fih_s2.dtsi"
 
 /* Touch */
 #include "touch/touch-focaltech8716.dtsi"
