@@ -9,6 +9,63 @@ qcom,sat_scud_3000mah_100k_4350mv {
 			qcom,battery-type = "sat_scud_3000mah_100k_4350mv";
 			qcom,checksum = <0x8f2>;
 			qcom,gui-version = "PM660GUI - 0.0.0.45";
-			qcom,fg-profile-data = <0xf71e6506 0x84031807 0xcc1c1802 0x8d0dbe0a 0x918d123 0x2e449f5a 0x70000000 0xf000000 0x8fc3 0xa3cc41aa 0x4c000800 0x5ecb8ddc 0x79044602 0x220d65f5 0xfbec182a 0x43060920 0x27001400 0xcc1f9d05 0x640a6c06 0xcd1cf102 0x130c1a12 0x8818102a 0x904dfc5b 0x6c000000 0xd000000 0x17d5 0xb7c3a6cb 0x25000000 0x9e38ddc 0x3b0665f3 0xbde3100a 0xdce31023 0xb733ccff 0x7100000 0xd40b6646 0x25004000 0xd5010afa 0xff000000 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
+	qcom,fg-profile-data = [
+		 F7 1E 65 06
+		 84 03 18 07
+		 CC 1C 18 02
+		 8D 0D BE 0A
+		 09 18 D1 23
+		 2E 44 9F 5A
+		 70 00 00 00
+		 0F 00 00 00
+		 00 00 8F C3
+		 A3 CC 41 AA
+		 4C 00 08 00
+		 5E CB 8D DC
+		 79 04 46 02
+		 22 0D 65 F5
+		 FB EC 18 2A
+		 43 06 09 20
+		 27 00 14 00
+		 CC 1F 9D 05
+		 64 0A 6C 06
+		 CD 1C F1 02
+		 13 0C 1A 12
+		 88 18 10 2A
+		 90 4D FC 5B
+		 6C 00 00 00
+		 0D 00 00 00
+		 00 00 17 D5
+		 B7 C3 A6 CB
+		 25 00 00 00
+		 09 E3 8D DC
+		 3B 06 65 F3
+		 BD E3 10 0A
+		 DC E3 10 23
+		 B7 33 CC FF
+		 07 10 00 00
+		 D4 0B 66 46
+		 25 00 40 00
+		 D5 01 0A FA
+		 FF 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+		 00 00 00 00
+	];
 		};
 
