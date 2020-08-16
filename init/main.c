@@ -503,13 +503,12 @@ asmlinkage __visible void __init start_kernel(void)
       char *command_line2, *command_linenew, *tok;
         
 
-// REMOVE DM-VERITY2  FORCED CHECK  HACK
-  //     char word1[] = "skip_initramfs";
+// REMOVE DM-VERITY2  FORCED CHECK
     char word1[] = "/dev/dm-0 dm=\"system none ro,0 1 android-verity /dev/mmcblk0p";
     char word2[] = "\"/dev/mmcblk0p";
-//keymaster hack date only for supporting device, SAT uses depreciated version
+//qcom keymaster hack date only for supporting device, SAT uses depreciated version
 char *keymaster_fake[4] = {"HH1", "HH6", "DRG", "HD1"};
-char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-07-05";
+char *keymaster_fake_patch=" androidboot.fakekeymaster=2020-08-05";
 //ADD VERITY KEY FOR USAGE WITH STOCK ROMS
 char *word3[13] = {"SS2", "SAT", "C10", "HH1", "SG1", "SD1", "HH6", "HD1", "B2N", "C1N", "CTL", "DRG", "PL2"};
 char *strnokia = " veritykeyid=id:8f56f02c61394639f13af4e8cfe02d087e41b936";
