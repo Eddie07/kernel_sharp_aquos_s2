@@ -36,6 +36,7 @@
 #include <soc/qcom/boot_stats.h>
 
 #define BUILD_ID_LENGTH 32
+#define CHIP_ID_LENGTH 32
 #define SMEM_IMAGE_VERSION_BLOCKS_COUNT 32
 #define SMEM_IMAGE_VERSION_SINGLE_BLOCK_SIZE 128
 #define SMEM_IMAGE_VERSION_SIZE 4096
@@ -200,19 +201,21 @@ struct socinfo_v0_9 {
 struct socinfo_v0_10 {
 	struct socinfo_v0_9 v0_9;
 	uint32_t serial_number;
+	uint32_t num_pmics;
+	uint32_t pmic_array_offset;
+	uint32_t chip_family;
+	uint32_t raw_device_family;
+	uint32_t raw_device_number;
+	uint32_t nproduct_id;
+	char chip_name[CHIP_ID_LENGTH];
 };
 
 struct socinfo_v0_11 {
 	struct socinfo_v0_10 v0_10;
-	uint32_t num_pmics;
-	uint32_t pmic_array_offset;
 };
 
 struct socinfo_v0_12 {
 	struct socinfo_v0_11 v0_11;
-	uint32_t chip_family;
-	uint32_t raw_device_family;
-	uint32_t raw_device_number;
 };
 
 static union {
@@ -704,27 +707,43 @@ EXPORT_SYMBOL(socinfo_get_serial_number);
 static uint32_t socinfo_get_chip_family(void)
 {
 	return socinfo ?
-		(socinfo_format >= SOCINFO_VERSION(0, 12) ?
-			socinfo->v0_12.chip_family : 0)
+		(socinfo_format >= SOCINFO_VERSION(0, 10) ?
+			socinfo->v0_10.chip_family : 0)
 		: 0;
 }
 
 static uint32_t socinfo_get_raw_device_family(void)
 {
 	return socinfo ?
-		(socinfo_format >= SOCINFO_VERSION(0, 12) ?
-			socinfo->v0_12.raw_device_family : 0)
+		(socinfo_format >= SOCINFO_VERSION(0, 10) ?
+			socinfo->v0_10.raw_device_family : 0)
 		: 0;
 }
 
 static uint32_t socinfo_get_raw_device_number(void)
 {
 	return socinfo ?
-		(socinfo_format >= SOCINFO_VERSION(0, 12) ?
-			socinfo->v0_12.raw_device_number : 0)
+		(socinfo_format >= SOCINFO_VERSION(0, 10) ?
+			socinfo->v0_10.raw_device_number : 0)
 		: 0;
 }
 
+static char *socinfo_get_chip_name(void)
+{
+//	return socinfo ?
+//		(socinfo_format >= SOCINFO_VERSION(0, 10) ?
+//			socinfo->v0_10.chip_name : "N/A")
+//		: "N/A";
+return socinfo_get_id_string();
+}
+
+static uint32_t socinfo_get_nproduct_id(void)
+{
+	return socinfo ?
+		(socinfo_format >= SOCINFO_VERSION(0, 10) ?
+			socinfo->v0_10.nproduct_id : 0)
+		: 0;
+}
 enum pmic_model socinfo_get_pmic_model(void)
 {
 	return socinfo ?
@@ -794,6 +813,7 @@ msm_get_hw_platform(struct device *dev,
 			char *buf)
 {
 	uint32_t hw_type;
+
 	hw_type = socinfo_get_platform_type();
 
 	return snprintf(buf, PAGE_SIZE, "%-.32s\n",
@@ -905,6 +925,25 @@ msm_get_raw_device_number(struct device *dev,
 	return snprintf(buf, PAGE_SIZE, "0x%x\n",
 		socinfo_get_raw_device_number());
 }
+
+static ssize_t
+msm_get_chip_name(struct device *dev,
+		   struct device_attribute *attr,
+		   char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%-.32s\n",
+			socinfo_get_chip_name());
+}
+
+static ssize_t
+msm_get_nproduct_id(struct device *dev,
+			struct device_attribute *attr,
+			char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "0x%x\n",
+		socinfo_get_nproduct_id());
+}
+
 
 static ssize_t
 msm_get_pmic_model(struct device *dev,
@@ -1184,6 +1223,13 @@ static struct device_attribute msm_soc_attr_raw_device_number =
 	__ATTR(raw_device_number, S_IRUGO,
 			msm_get_raw_device_number, NULL);
 
+static struct device_attribute msm_soc_attr_chip_name =
+	__ATTR(chip_name, S_IRUGO,
+			msm_get_chip_name, NULL);
+
+static struct device_attribute msm_soc_attr_nproduct_id =
+	__ATTR(nproduct_id, S_IRUGO,
+			msm_get_nproduct_id, NULL);
 static struct device_attribute msm_soc_attr_pmic_model =
 	__ATTR(pmic_model, S_IRUGO,
 			msm_get_pmic_model, NULL);
@@ -1331,14 +1377,18 @@ static void __init populate_soc_sysfs_files(struct device *msm_soc_device)
 
 	switch (socinfo_format) {
 	case SOCINFO_VERSION(0, 12):
-		device_create_file(msm_soc_device,
+	case SOCINFO_VERSION(0, 11):
+	case SOCINFO_VERSION(0, 10):
+			device_create_file(msm_soc_device,
 					&msm_soc_attr_chip_family);
 		device_create_file(msm_soc_device,
 					&msm_soc_attr_raw_device_family);
 		device_create_file(msm_soc_device,
 					&msm_soc_attr_raw_device_number);
-	case SOCINFO_VERSION(0, 11):
-	case SOCINFO_VERSION(0, 10):
+		device_create_file(msm_soc_device,
+					&msm_soc_attr_nproduct_id);
+		 device_create_file(msm_soc_device,
+					&msm_soc_attr_chip_name);
 		 device_create_file(msm_soc_device,
 					&msm_soc_attr_serial_number);
 	case SOCINFO_VERSION(0, 9):
@@ -1532,10 +1582,10 @@ static void socinfo_print(void)
 			socinfo->v0_7.pmic_die_revision,
 			socinfo->v0_9.foundry_id,
 			socinfo->v0_10.serial_number,
-			socinfo->v0_11.num_pmics);
+			socinfo->v0_10.num_pmics);
 		break;
 	case SOCINFO_VERSION(0, 12):
-		pr_info("v%u.%u, id=%u, ver=%u.%u, raw_id=%u, raw_ver=%u, hw_plat=%u, hw_plat_ver=%u\n accessory_chip=%u, hw_plat_subtype=%u, pmic_model=%u, pmic_die_revision=%u foundry_id=%u serial_number=%u num_pmics=%u chip_family=0x%x raw_device_family=0x%x raw_device_number=0x%x\n",
+		pr_info("v%u.%u, id=%u, ver=%u.%u, raw_id=%u, raw_ver=%u, hw_plat=%u, hw_plat_ver=%u\n accessory_chip=%u, hw_plat_subtype=%u, pmic_model=%u, pmic_die_revision=%u foundry_id=%u serial_number=%u num_pmics=%u chip_family=0x%x raw_device_family=0x%x raw_device_number=0x%x\n nproduct_id=0x%x\n",
 			f_maj, f_min, socinfo->v0_1.id, v_maj, v_min,
 			socinfo->v0_2.raw_id, socinfo->v0_2.raw_version,
 			socinfo->v0_3.hw_platform,
@@ -1546,10 +1596,11 @@ static void socinfo_print(void)
 			socinfo->v0_7.pmic_die_revision,
 			socinfo->v0_9.foundry_id,
 			socinfo->v0_10.serial_number,
-			socinfo->v0_11.num_pmics,
-			socinfo->v0_12.chip_family,
-			socinfo->v0_12.raw_device_family,
-			socinfo->v0_12.raw_device_number);
+			socinfo->v0_10.num_pmics,
+			socinfo->v0_10.chip_family,
+			socinfo->v0_10.raw_device_family,
+			socinfo->v0_10.raw_device_number,
+			socinfo->v0_10.nproduct_id);
 		break;
 
 	default:
