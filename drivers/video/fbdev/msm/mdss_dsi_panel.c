@@ -289,6 +289,9 @@ static int mdss_dsi_request_gpios(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 			rc);
 		goto rst_gpio_err;
 	}
+
+
+
 	if (gpio_is_valid(ctrl_pdata->avdd_en_gpio)) {
 		rc = gpio_request(ctrl_pdata->avdd_en_gpio,
 						"avdd_enable");
@@ -468,6 +471,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 					pdata->panel_info.rst_seq[i]);
 				if (pdata->panel_info.rst_seq[++i])
 					usleep_range(pinfo->rst_seq[i] * 1000, pinfo->rst_seq[i] * 1000);
+				
 			}
 
 			if (gpio_is_valid(ctrl_pdata->avdd_en_gpio)) {
@@ -2768,6 +2772,16 @@ static int mdss_panel_parse_dt(struct device_node *np,
 	const char *bridge_chip_name;
 	struct mdss_panel_info *pinfo = &(ctrl_pdata->panel_data.panel_info);
 
+	rc = of_property_read_u32(np, "fih,panel-id", &tmp);
+	if (rc) {
+		pr_err("%s:%d, panel id not specified\n",
+						__func__, __LINE__);
+	}
+	else
+	{
+		pr_debug("\n\n******************** [HL] %s of_property_read_u32(np, \"fih,panel-id\", &tmp), tmp = %d **********************\n\n", __func__, tmp);
+	}
+	pinfo->panel_id = (!rc ? tmp : 0);
 	if (mdss_dsi_is_hw_config_split(ctrl_pdata->shared_data))
 		pinfo->is_split_display = true;
 

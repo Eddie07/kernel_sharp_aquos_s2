@@ -396,25 +396,34 @@ static int mdss_dsi_panel_power_off(struct mdss_panel_data *pdata)
 	if (mdss_dsi_pinctrl_set_state(ctrl_pdata, false))
 		pr_debug("reset disable: pinctrl not enabled\n");
 
-
+	switch (ctrl_pdata->panel_data.panel_info.panel_id)
+	{
+		case FIH_FT8716U_FFD_VIDEO_PANEL:
+			if (!gdouble_tap_enable)
+			{
+			    pr_debug("[ALAN] panel_id=%d specific power off flow\n", ctrl_pdata->panel_data.panel_info.panel_id);
+			    udelay(3 * 1000);
+			    /* VSP/VSN off */
+			    msm_dss_enable_vreg(&(ctrl_pdata->panel_power_data.vreg_config[1]), ctrl_pdata->panel_power_data.num_vreg - 1, 0);
+			    udelay(15 * 1000);
+			    /* VDDIO off */
+			    msm_dss_enable_vreg(ctrl_pdata->panel_power_data.vreg_config, 1, 0);
+			}
+			break;
+			default:
+			/* original qualcomm default */
 		if (!gdouble_tap_enable)
-				{
-					udelay(7 * 1000);
-
-	ret = msm_dss_enable_vreg(
-		ctrl_pdata->panel_power_data.vreg_config,
-		ctrl_pdata->panel_power_data.num_vreg, 0);
-	if (ret)
-		pr_err("%s: failed to disable vregs for %s\n",
-			__func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
-
-					udelay(11 * 1000);
-					gpio_set_value(ctrl_pdata->iovdd_enable, 0);
-					gpio_free(ctrl_pdata->iovdd_enable);
+		{
+			ret = msm_dss_enable_vreg(
+			ctrl_pdata->panel_power_data.vreg_config,
+				ctrl_pdata->panel_power_data.num_vreg, 0);
+			if (ret)
+				pr_err("%s: failed to disable vregs for %s\n",
+					__func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
 				}
-
-
-end:
+			break;
+	}
+	end:
 	return ret;
 }
 
@@ -431,13 +440,36 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-	ret = msm_dss_enable_vreg(
+
+	switch (ctrl_pdata->panel_data.panel_info.panel_id)
+	{
+		case FIH_FT8716U_FFD_VIDEO_PANEL:
+			{
+			    if (!gdouble_tap_enable)
+			    {
+			        pr_debug("[ALAN] panel_id=%d specific power on flow\n", ctrl_pdata->panel_data.panel_info.panel_id);
+			        /* VDDIO on */
+			        msm_dss_enable_vreg(&(ctrl_pdata->panel_power_data.vreg_config[0]), 1, 1);
+			        udelay(3 * 1000);
+			        /* VSP/VSN on, but delay controlled by PM660L 0x0001EC66 LCDB_PWRUP_PWRDN_CTL  */
+			        msm_dss_enable_vreg(&(ctrl_pdata->panel_power_data.vreg_config[1]), 1, 1);
+			        udelay(11 * 1000);
+			        msm_dss_enable_vreg(&(ctrl_pdata->panel_power_data.vreg_config[2]), 1, 1);
+			        udelay(3 * 1000);
+			        break;
+			    }
+			}
+			break;
+			default: 
+			{	ret = msm_dss_enable_vreg(
 		ctrl_pdata->panel_power_data.vreg_config,
 		ctrl_pdata->panel_power_data.num_vreg, 1);
-	if (ret) {
-		pr_err("%s: failed to enable vregs for %s\n",
+			if (ret) {
+			pr_err("%s: failed to enable vregs for %s\n",
 			__func__, __mdss_dsi_pm_name(DSI_PANEL_PM));
 		return ret;
+	}
+	}
 	}
 
 	/*
@@ -448,9 +480,6 @@ static int mdss_dsi_panel_power_on(struct mdss_panel_data *pdata)
 	 */
 	if (pdata->panel_info.cont_splash_enabled ||
 		!pdata->panel_info.mipi.lp11_init) {
-
-		pr_debug("\n\n******************** [HL]%s, %d: Pull RESE Pin here!\n", __func__, __LINE__);
-		
 		if (mdss_dsi_pinctrl_set_state(ctrl_pdata, true))
 			pr_debug("reset enable: pinctrl not enabled\n");
 
@@ -3016,10 +3045,12 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 		rc = mdss_dsi_post_panel_on(pdata);
 		break;
 	case MDSS_EVENT_PANEL_ON:
+		pr_debug("[HL]%s: MDSS_EVENT_PANEL_ON <-- start\n", __func__);
 		ctrl_pdata->ctrl_state |= CTRL_STATE_MDP_ACTIVE;
 		if (ctrl_pdata->on_cmds.link_state == DSI_HS_MODE)
 			rc = mdss_dsi_unblank(pdata);
 		pdata->panel_info.esd_rdy = true;
+		pr_debug("[HL]%s: MDSS_EVENT_PANEL_ON <-- end\n", __func__);
 		break;
 	case MDSS_EVENT_BLANK:
 		power_state = (int) (unsigned long) arg;
@@ -3039,72 +3070,47 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 				{
 					pr_debug("\n\n*** [HL] %s: FIH_ILI7807E_1080P_VIDEO_PANEL ***\n\n", __func__);
 
-			//		pr_debug("\n\n*** [HL] %s, fih_tp_lcm_suspend_lpwg_on() <-- START ***\n\n", __func__);
 			//		fih_tp_lcm_suspend_lpwg_on();
-			//		pr_debug("\n\n*** [HL] %s, fih_tp_lcm_suspend_lpwg_on() <-- END ***\n\n", __func__);
-
 				}
 				break;
 			//ZZDC-snow-Touch-_20170809
 			case FIH_FT8716U_FHD_CTC_B2N_VIDEO_PANEL:
 				{
-					pr_err("\n\n %s: FIH_FT8716U_FHD_CTC_B2N_VIDEO_PANEL ***\n\n", __func__);
-
-					pr_err("\n\n %s, fts_tp_lcm_suspend() <-- START ***\n\n", __func__);
 					fts_tp_lcm_suspend();
-					pr_err("\n\n %s, fts_tp_lcm_suspend() <-- END ***\n\n", __func__);
 				}
 				break;
 			case FIH_NT36672_FHD_CTC_B2N_VIDEO_PANEL:
 			case FIH_NT36672_H_GLASS_FHD_CTC_B2N_VIDEO_PANEL:
 				{
-					pr_err("\n\n %s: FIH_NT36672_FHD_CTC_B2N_VIDEO_PANEL ***\n\n", __func__);
-
-					//pr_err("\n\n %s, fts_tp_lcm_suspend() <-- START ***\n\n", __func__);
 				//	fts_tp_lcm_suspend();
-					//pr_err("\n\n %s, NOOOOOOOOOOOOOOOOOOOOOOOOOO fts_tp_lcm_suspend()  ***\n\n", __func__);
-					//pr_err("\n\n %s, fts_tp_lcm_suspend() <-- END ***\n\n", __func__);
 				}
 				break;
 			case FIH_FT8716U_1080P_CTC_VIDEO_PANEL:
 				{
-					pr_debug("\n\n*** [snow] %s: FIH_FT8716U_1080P_CTC_VIDEO_PANEL ***\n\n", __func__);
-
-					//pr_debug("\n\n*** [snow] %s, fts_tp_lcm_suspend() <-- START ***\n\n", __func__);
-					pr_debug("[snow] lcm is ctc suspend");
 					fts_tp_lcm_suspend();
 				}
 				break;
 			case FIH_FT8719_1080P_VIDEO_PANEL:
 				{
-					pr_debug("\n\n***%s: FIH_FT8719_1080P_VIDEO_PANEL ***\n\n", __func__);
 
-					pr_debug("lcm is 8719 suspend");
 				//	fts_tp_lcm_suspend_8719();
 				}
 				break;
 				//ZZDC sunqiupeng add for bringup PL2 2nd panel@20171226 begin
 			case FIH_R69338_1080P_VIDEO_PANEL_PL2:
 				{
-					pr_debug("[snow] lcm is hlt suspend");
+
 				//	hlt_tp_lcm_suspend();
-					//pr_debug("\n\n*** [snow] %s, fts_tp_lcm_suspend() <-- END ***\n\n", __func__);
+
 
 				}
 				break;
-				//ZZDC sunqiupeng add for bringup PL2 2nd panel@20171226 end
 			case FIH_FT8716U_FFD_VIDEO_PANEL:
 				{
-					pr_debug("\n\n*** [snow] %s: FIH_FT8716U_1080P_CTC_VIDEO_PANEL ***\n\n", __func__);
-
-					pr_debug("\n\n*** [snow] %s, fts_tp_lcm_suspend() <-- START ***\n\n", __func__);
 					fts_tp_lcm_suspend();
-					pr_debug("\n\n*** [snow] %s, fts_tp_lcm_suspend() <-- END ***\n\n", __func__);
-
 				}
 				break;
 			default:
-				pr_debug("\n\n*** [HL] %s: default ***\n\n", __func__);
 				break;
 		}
 		//SW4-HL-Touch-ImplementDoubleTap-00+}_20170623
