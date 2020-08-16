@@ -3238,14 +3238,14 @@ struct proc_dir_entry *proc_entry = NULL;
 /*control path*/
 
 	pr_err("tfa98xx driver version %s\n", TFA98XX_VERSION);
-        if(strstr(saved_command_line, "androidboot.device=PL2"))
-	{
+        if(strstr(saved_command_line, "androidboot.device=SG1") || strstr(saved_command_line, "androidboot.device=HD1")) goto exit;
+	
 		if(strstr(saved_command_line, "androidboot.smartamp=nxp") == NULL)
 		{
 			pr_err("%s This Smart amp vendor is not nxp.\n",__func__);
 			goto exit;
 		}
-	}
+	
 
 	/* Enable debug traces */
 	tfa98xx_kmsg_regs = trace_level & 2;
