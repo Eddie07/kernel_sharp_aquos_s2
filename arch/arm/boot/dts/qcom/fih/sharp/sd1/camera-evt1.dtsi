@@ -188,8 +188,8 @@
 		qcom,gpio-vaf = <4>;
 		qcom,gpio-req-tbl-num = <0 1 2 3 4>;
 		qcom,gpio-req-tbl-flags = <1 0 0 0 0>;
-		qcom,gpio-req-tbl-label = "CAMIF_MCLK0",
-					"CAM_RESET0",
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK",
+					"CAM_RESET",
 					"CAM_VDIG",
 					"CAM_VANA",
 					"CAM_VAF";
@@ -231,7 +231,7 @@
         qcom,gpio-vaf = <4>;
 		qcom,gpio-req-tbl-num = <0 1 2 3 4>;
 		qcom,gpio-req-tbl-flags = <1 0 0 0 0>;
-		qcom,gpio-req-tbl-label = "CAMIF_MCLK2",
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK",
 					  "CAM_RESET",
 					  "CAM_VDIG",
 					  "CAM_VANA",
@@ -323,8 +323,8 @@
 		qcom,gpio-vaf = <4>;
 		qcom,gpio-req-tbl-num = <0 1 2 3 4>;
 		qcom,gpio-req-tbl-flags = <1 0 0 0 0>;
-		qcom,gpio-req-tbl-label = "CAMIF_MCLK0",
-					"CAM_RESET0",
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK",
+					"CAM_RESET",
 					"CAM_VDIG",
 					"CAM_VANA",
 					"CAM_VAF";
@@ -373,7 +373,7 @@
         qcom,gpio-vaf = <4>;
 		qcom,gpio-req-tbl-num = <0 1 2 3 4>;
 		qcom,gpio-req-tbl-flags = <1 0 0 0 0>;
-		qcom,gpio-req-tbl-label = "CAMIF_MCLK2",
+		qcom,gpio-req-tbl-label = "CAMIF_MCLK",
 					  "CAM_RESET",
 					  "CAM_VDIG",
 					  "CAM_VANA",

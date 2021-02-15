@@ -16,8 +16,8 @@
 #include "sdm630.dtsi"
 #include "sdm630-mtp.dtsi"
 #include "sdm660-internal-codec.dtsi"
-#include "fih/sd1/sd1-DVT-IDT.dtsi"
-#include "fih/sd1/dsi-panel-ft8716-ffd-video-evt2-630v2.dtsi"
+#include "fih/sharp/sd1/sd1-DVT-IDT.dtsi"
+#include "fih/sharp/sd1/dsi-panel-ft8716-ffd-video-evt2-630v2.dtsi"
 
 / {
 	model = "Qualcomm Technologies, Inc. SDM 630 PM660 + PM660L MTP, HH1 EU DVT + !!!";

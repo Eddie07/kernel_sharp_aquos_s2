@@ -1,7 +1,7 @@
 /* SD1 preEVT SDM660 */
 
 /* MemMap parts */
-#include "../common/memmap-evb.dtsi"
+#include "../../common/memmap-evb.dtsi"
 
 /* SYSTEM parts */
 #include "system.dtsi"
@@ -22,7 +22,8 @@
 #include "camera-preevt.dtsi"
 
 /* Haptic */
-#include "haptics-evt2.dtsi"
+#include "../misc/haptics-hal1.1.dtsi"
+
 
 /* Touch */
 #include "touch-focaltech8716-evt2.dtsi"
@@ -46,4 +47,5 @@
 #include "usb_phy.dtsi"
 
 /* LED */
-#include "led-evt2.dtsi"
+#include "../leds/heineken_leds_rgb.dtsi"
+

@@ -10,7 +10,7 @@
 #include "common/system-preEVT-630-hd1.dtsi"
 
 /* External LDO control */
-//#include "ext-reguator/fixed-regulator-EVT-v1.dtsi"
+#include "ext-reguator/fixed-regulator-EVT-v2.dtsi"
 
 /* Keypad parts */
 #include "misc/keypad.dtsi"
@@ -41,27 +41,26 @@
 #include "misc/sd-evb.dtsi"
 
 /* Fingerprint */
-//#include "fingerprint/fingerprint-gf3208-evt-b2n.dtsi"
+//#include "fingerprint/fingerprint-gf3208-evt.dtsi"
 #include "fingerprint/fingerprint-microarray.dtsi"
 
 /* Sensor */
 /* NO HALL Sensor */
 
-/* Touch */
-/* SW4-HL-TP-BringUpGT915L-00*_20180119 */
+/*Touch*/
+
+#include "touch/himax.dtsi"
 
 /* USB */
 #include "usb/microUSB_nd1.dtsi"
 
-/*Touch*/
 
-#include "touch/himax.dtsi"
 
 /* LCM */
 /* SW4-HL-Display-himax8399 */
 #include "display/dsi-panel-hx8399c-fhd-plus-video-hd1.dtsi"
 
-/* My mulivendor */
+/* multivendor */
 #include "misc/multivendor.dtsi"
 
 
